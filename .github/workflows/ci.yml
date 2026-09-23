@@ -1,0 +1,23 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Backend deps
+        run: npm ci --prefix backend
+      - name: Unit tests (decision rules)
+        run: npm test --prefix backend
+      - name: Offline end-to-end verify (mock NLU, no credentials)
+        run: MOCK_MODE=1 SIM_PACE=0 node scripts/verify.mjs
+      - name: Validate SAM template
+        uses: aws-actions/setup-sam@v2
+      - run: sam validate --lint -t backend/template.yaml --region us-east-1
+      - name: Frontend deps
+        run: npm ci --prefix app
+      - name: Type check and build
+        run: npm run build --prefix app
+        env: { NEXT_TELEMETRY_DISABLED: "1" }

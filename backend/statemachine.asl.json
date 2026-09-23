@@ -1,0 +1,63 @@
+{
+  "Comment": "Calltree campaign: call every resident on the register, retry no-answers once after a wait, then finalize the drill. Escalations are created by the call itself.",
+  "StartAt": "Init",
+  "States": {
+    "Init": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": { "FunctionName": "${DialerArn}", "Payload": { "action": "init", "drillId.$": "$.drillId" } },
+      "ResultSelector": { "residentIds.$": "$.Payload.residentIds", "retryDelaySeconds.$": "$.Payload.retryDelaySeconds" },
+      "ResultPath": "$.init",
+      "Retry": [{ "ErrorEquals": ["States.ALL"], "IntervalSeconds": 2, "MaxAttempts": 2 }],
+      "Next": "CallEveryone"
+    },
+    "CallEveryone": {
+      "Type": "Map",
+      "ItemsPath": "$.init.residentIds",
+      "MaxConcurrency": 8,
+      "ItemSelector": { "drillId.$": "$.drillId", "mode.$": "$.mode", "residentId.$": "$$.Map.Item.Value", "retryDelaySeconds.$": "$.init.retryDelaySeconds" },
+      "ResultPath": "$.results",
+      "ItemProcessor": {
+        "ProcessorConfig": { "Mode": "INLINE" },
+        "StartAt": "FirstAttempt",
+        "States": {
+          "FirstAttempt": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+            "Parameters": { "FunctionName": "${DialerArn}", "Payload": { "action": "call", "attempt": 1, "taskToken.$": "$$.Task.Token", "drillId.$": "$.drillId", "residentId.$": "$.residentId", "mode.$": "$.mode" } },
+            "TimeoutSeconds": 240,
+            "ResultPath": "$.first",
+            "Catch": [{ "ErrorEquals": ["States.ALL"], "ResultPath": "$.firstError", "Next": "TreatAsNoAnswer1" }],
+            "Next": "Answered1"
+          },
+          "TreatAsNoAnswer1": { "Type": "Pass", "Result": { "outcome": "NO_ANSWER" }, "ResultPath": "$.first", "Next": "Answered1" },
+          "Answered1": {
+            "Type": "Choice",
+            "Choices": [{ "Variable": "$.first.outcome", "StringEquals": "NO_ANSWER", "Next": "WaitBeforeRetry" }],
+            "Default": "Done"
+          },
+          "WaitBeforeRetry": { "Type": "Wait", "SecondsPath": "$.retryDelaySeconds", "Next": "SecondAttempt" },
+          "SecondAttempt": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+            "Parameters": { "FunctionName": "${DialerArn}", "Payload": { "action": "call", "attempt": 2, "taskToken.$": "$$.Task.Token", "drillId.$": "$.drillId", "residentId.$": "$.residentId", "mode.$": "$.mode" } },
+            "TimeoutSeconds": 240,
+            "ResultPath": "$.second",
+            "Catch": [{ "ErrorEquals": ["States.ALL"], "ResultPath": "$.secondError", "Next": "Done" }],
+            "Next": "Done"
+          },
+          "Done": { "Type": "Pass", "End": true }
+        }
+      },
+      "Next": "Finalize"
+    },
+    "Finalize": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": { "FunctionName": "${DialerArn}", "Payload": { "action": "finalize", "drillId.$": "$.drillId" } },
+      "ResultPath": "$.final",
+      "Retry": [{ "ErrorEquals": ["States.ALL"], "IntervalSeconds": 2, "MaxAttempts": 2 }],
+      "End": true
+    }
+  }
+}

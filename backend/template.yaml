@@ -1,0 +1,248 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Calltree: heat-alert check-in calls for a town's vulnerable-persons register. Lex understands,
+  code decides, Step Functions retries, people get the unclear ones. Region us-east-1.
+
+Parameters:
+  LexBotId:
+    Type: String
+    Default: none
+    Description: Lex V2 bot id from scripts/lex_bot.py. "none" runs the keyword NLU twin.
+  LexBotAliasId:
+    Type: String
+    Default: none
+  StaffEmail:
+    Type: String
+    Default: ""
+    Description: SES-verified address that receives escalation emails (sandbox needs the sender verified too).
+  NwsZone:
+    Type: String
+    Default: AZZ544
+    Description: NWS forecast zone to watch (AZZ544 is Maryvale / West Phoenix).
+  RetryDelaySeconds:
+    Type: Number
+    Default: 20
+    Description: Wait before the second attempt to a no-answer. Production would be 900.
+  SimCallMs:
+    Type: Number
+    Default: 2500
+    Description: Simulated call pacing so the ops room animates at a watchable speed.
+  TwilioAccountSid:
+    Type: String
+    Default: ""
+    NoEcho: true
+  TwilioAuthToken:
+    Type: String
+    Default: ""
+    NoEcho: true
+  TwilioFrom:
+    Type: String
+    Default: ""
+  AppVersion:
+    Type: String
+    Default: dev
+  MapKeyName:
+    Type: String
+    Default: ""
+    Description: Amazon Location API key name (created outside the stack). Empty means the map uses keyless OpenFreeMap tiles.
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Architectures: [arm64]
+    Timeout: 30
+    MemorySize: 512
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref Table
+        LEX_BOT_ID: !Ref LexBotId
+        LEX_BOT_ALIAS_ID: !Ref LexBotAliasId
+        LEX_LOCALE: en_US
+        STAFF_EMAIL: !Ref StaffEmail
+        FROM_EMAIL: !Ref StaffEmail
+        NWS_ZONE: !Ref NwsZone
+        RETRY_DELAY_SECONDS: !Ref RetryDelaySeconds
+        SIM_CALL_MS: !Ref SimCallMs
+        MAP_KEY_NAME: !Ref MapKeyName
+        TWILIO_ACCOUNT_SID: !Ref TwilioAccountSid
+        TWILIO_AUTH_TOKEN: !Ref TwilioAuthToken
+        TWILIO_FROM: !Ref TwilioFrom
+        APP_VERSION: !Ref AppVersion
+        NODE_OPTIONS: --enable-source-maps
+
+Resources:
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: PK, AttributeType: S }
+        - { AttributeName: SK, AttributeType: S }
+      KeySchema:
+        - { AttributeName: PK, KeyType: HASH }
+        - { AttributeName: SK, KeyType: RANGE }
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: ["*"]
+        AllowMethods: [GET, POST, PUT, OPTIONS]
+        AllowHeaders: [content-type]
+        MaxAge: 600
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: api.handler
+      Timeout: 29
+      MemorySize: 1024
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !Ref CampaignStateMachine
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref Table }
+        - Statement:
+            - Effect: Allow
+              Action: [states:StartExecution]
+              Resource: !Ref CampaignStateMachine
+            - Effect: Allow
+              Action: [lex:RecognizeText, lex:RecognizeUtterance]
+              Resource: "*"
+            - Effect: Allow
+              Action: [polly:SynthesizeSpeech]
+              Resource: "*"
+            - Effect: Allow
+              Action: [ses:SendEmail]
+              Resource: "*"
+            - Effect: Allow
+              Action: [geo:DescribeKey]
+              Resource: "*"
+      Events:
+        Root:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: "/"
+            Method: ANY
+        Proxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: "/{proxy+}"
+            Method: ANY
+
+  TwilioFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: twilio.handler
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref Table }
+        - Statement:
+            - Effect: Allow
+              Action: [states:SendTaskSuccess, states:SendTaskFailure]
+              Resource: "*"
+            - Effect: Allow
+              Action: [lex:RecognizeText]
+              Resource: "*"
+            - Effect: Allow
+              Action: [ses:SendEmail]
+              Resource: "*"
+      Events:
+        Twilio:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: "/twilio/{proxy+}"
+            Method: POST
+
+  DialerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: dialer.handler
+      Timeout: 120
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref Table }
+        - Statement:
+            - Effect: Allow
+              Action: [states:SendTaskSuccess, states:SendTaskFailure, states:SendTaskHeartbeat]
+              Resource: "*"
+            - Effect: Allow
+              Action: [lex:RecognizeText, lex:RecognizeUtterance]
+              Resource: "*"
+            - Effect: Allow
+              Action: [ses:SendEmail]
+              Resource: "*"
+
+  CampaignStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      DefinitionUri: statemachine.asl.json
+      DefinitionSubstitutions:
+        DialerArn: !GetAtt DialerFunction.Arn
+      Policies:
+        - LambdaInvokePolicy: { FunctionName: !Ref DialerFunction }
+
+  AlertsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: alerts.handler
+      Timeout: 60
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !Ref CampaignStateMachine
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref Table }
+        - Statement:
+            - Effect: Allow
+              Action: [states:StartExecution]
+              Resource: !Ref CampaignStateMachine
+
+  AlertsSchedulerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: { Service: scheduler.amazonaws.com }
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals: { "aws:SourceAccount": !Ref AWS::AccountId }
+      Policies:
+        - PolicyName: invoke-alerts
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !GetAtt AlertsFunction.Arn
+
+  AlertsSchedule:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      Name: !Sub "${AWS::StackName}-nws-poll"
+      Description: Poll NWS active alerts for the watched zone every 15 minutes.
+      ScheduleExpression: rate(15 minutes)
+      FlexibleTimeWindow: { Mode: "OFF" }
+      State: ENABLED
+      Target:
+        Arn: !GetAtt AlertsFunction.Arn
+        RoleArn: !GetAtt AlertsSchedulerRole.Arn
+
+Outputs:
+  ApiUrl:
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+  TableName:
+    Value: !Ref Table
+  StateMachineArn:
+    Value: !Ref CampaignStateMachine
+  MapKeyName:
+    Value: !Ref MapKeyName
+  DialerFunctionName:
+    Value: !Ref DialerFunction
