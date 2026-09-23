@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+.aws-sam/
+.env
+.env.*
+!.env.example
+qa/*.png
+__pycache__/
+*.pyc
+.DS_Store
+samconfig.toml
