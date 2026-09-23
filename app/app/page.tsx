@@ -98,7 +98,7 @@ export default function Home() {
         <div className="mx-auto max-w-[1200px]">
           <h2 id="next" className="text-[28px] font-extrabold md:text-[36px]">Where it is headed.</h2>
           <p className="mt-3 max-w-[70ch] text-[16px] text-ink-muted">Mass-notification products send one-way alerts. Nobody knows who is actually alright. Calltree is the two-way layer: the same register and the same three questions, with a different trigger. Power shutoffs, where California utilities must reach medical-baseline customers and send a technician if they cannot. Floods. Boil-water notices. Wildfire smoke. Starting with heat, because heat is the one that already has a law and a register.</p>
-          <div className="mt-6 flex flex-wrap gap-3"><Link href="/ops/" className="btn btn-primary btn-lg">Open the ops room</Link><a href="https://github.com/saharsh7002/calltree" className="btn btn-secondary btn-lg">Source on GitHub</a></div>
+          <div className="mt-6 flex flex-wrap gap-3"><Link href="/ops/" className="btn btn-primary btn-lg">Open the ops room</Link><a href="https://github.com/itssaharsh/calltree" className="btn btn-secondary btn-lg">Source on GitHub</a></div>
         </div>
       </section>
       <footer className="border-t border-line px-4 py-6 text-[13px] text-ink-muted md:px-6"><div className="mx-auto flex max-w-[1200px] flex-wrap gap-x-6 gap-y-2"><span>Calltree · AWS Builder Center Zero to Shipped 2026 · #social-good #startup</span><span>Built with Claude Code connected to AWS through the AWS MCP server.</span></div></footer>

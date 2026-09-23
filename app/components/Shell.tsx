@@ -7,9 +7,9 @@ const links = [
   { href: "/#how", label: "How it works" },
 ];
 
-export function Shell({ children, live = false, right }: { children: React.ReactNode; live?: boolean; right?: React.ReactNode }) {
+export function Shell({ children, live = false, right, full = false }: { children: React.ReactNode; live?: boolean; right?: React.ReactNode; full?: boolean }) {
   return (
-    <div className="relative z-[1] flex min-h-screen flex-col">
+    <div className={`relative z-[1] flex min-h-screen flex-col ${full ? "md:h-screen md:overflow-hidden" : ""}`}>
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-line bg-canvas/85 px-4 backdrop-blur-none md:px-6">
         <Link href="/" className="shrink-0"><Wordmark live={live} /></Link>
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
@@ -19,7 +19,7 @@ export function Shell({ children, live = false, right }: { children: React.React
         </nav>
         <div className="ml-auto flex items-center gap-2">{right}</div>
       </header>
-      <main className="flex flex-1 flex-col">{children}</main>
+      <main className="flex min-h-0 flex-1 flex-col">{children}</main>
     </div>
   );
 }

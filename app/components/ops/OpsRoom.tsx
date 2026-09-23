@@ -75,7 +75,7 @@ export function OpsRoom() {
   const loading = !state && !error;
 
   return (
-    <Shell live={running} right={
+    <Shell full live={running} right={
       <>
         <Link href="/answer/" className="btn btn-secondary hidden sm:inline-flex">Get called yourself</Link>
         <button className="btn btn-primary" onClick={declare} disabled={busy !== null || running} title={running ? "A drill is already running" : undefined}>{busy === "drill" ? "Declaring…" : "Declare heat drill"}</button>
@@ -96,7 +96,7 @@ export function OpsRoom() {
         </div>
       )}
       <div className="relative flex min-h-0 flex-1 flex-col md:flex-row">
-        <div className="relative h-[52vh] min-h-[320px] flex-1 md:h-auto">
+        <div className="relative h-[52vh] min-h-[320px] flex-1 md:h-auto md:min-h-0">
           {loading ? <div className="sk absolute inset-0 rounded-none" aria-label="Loading register" /> : residents.length ? (
             <MapView residents={residents} center={config?.center || { lat: 33.492, lon: -112.19 }} styleUrl={config?.mapStyle || null} selected={selected} onSelect={setSelected} />
           ) : (
@@ -105,7 +105,7 @@ export function OpsRoom() {
           <div className="lamp pointer-events-none absolute inset-0" aria-hidden />
           <Drawer resident={selectedResident} calls={selectedCalls} onClose={() => setSelected(null)} />
         </div>
-        <aside className="flex w-full flex-col border-t border-line bg-canvas md:w-[380px] md:border-l md:border-t-0" aria-label="Calls and queue">
+        <aside className="flex w-full min-h-0 flex-col border-t border-line bg-canvas md:w-[380px] md:border-l md:border-t-0" aria-label="Calls and queue">
           <div className="flex border-b border-line" role="tablist">
             {(["calls", "queue"] as Tab[]).map((t) => (
               <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`relative flex-1 py-2.5 text-[14px] font-semibold ${tab === t ? "text-ink" : "text-ink-muted"}`}>
@@ -114,7 +114,7 @@ export function OpsRoom() {
               </button>
             ))}
           </div>
-          <div className="scrollbar-thin max-h-[40vh] flex-1 overflow-y-auto md:max-h-none">
+          <div className="scrollbar-thin max-h-[40vh] min-h-0 flex-1 overflow-y-auto md:max-h-none">
             {loading ? <div className="flex flex-col gap-2 p-4">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="sk h-10" />)}</div> : tab === "calls" ? (
               <Ticker calls={calls} selected={selected} onSelect={setSelected} empty={running ? "Ringing the first eight lines…" : "No calls yet. Declare a heat drill to reach everyone on the register."} />
             ) : (

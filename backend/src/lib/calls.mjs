@@ -55,8 +55,9 @@ export async function finishCall({ call, resident, noAnswer = false }) {
 
 export async function createEscalation({ drillId, resident, call, type, label, decision }) {
   const at = nowIso();
+  const who = resident.age ? `${resident.name} (${resident.age})` : resident.name;
   const messages = {
-    neighbour: `${resident.name} (${resident.age}) said "${decision?.evidenceQuote || ''}" at ${at.slice(11, 16)} UTC. Please check on them now at ${resident.address}.`,
+    neighbour: `${who} said "${decision?.evidenceQuote || ''}" at ${at.slice(11, 16)} UTC. Please check on them now at ${resident.address}.`,
     staff: `${resident.name} could not be understood on the call. Please call back at ${resident.phone}.`,
     supply: `${resident.name} at ${resident.address}: "${decision?.evidenceQuote || ''}". Deliver a cooling kit or water today.`,
     visit: `${resident.name} at ${resident.address} did not answer two calls. Queue a home visit.`,

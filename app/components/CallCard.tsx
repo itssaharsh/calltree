@@ -173,7 +173,7 @@ export function CallCard({ presetName }: { presetName?: string }) {
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="card p-5" role="status">
             <div className="flex items-center gap-2"><StatusChip status={decision.status} /><span className="text-[14px] text-ink-muted">{RULE_LABEL[decision.rule] || decision.rule}</span></div>
             {decision.evidenceQuote && <p className="mt-2 text-[16px]">“{decision.evidenceQuote}”</p>}
-            {escalation ? <p className="mt-2 text-[14px]"><span className="mono text-[11px] uppercase tracking-[0.08em] text-accent">{ESC_LABEL[escalation.type] || escalation.type}</span> · {escalation.message}</p> : <p className="mt-2 text-[14px] text-ink-muted">Marked OK only because all three answers were clear affirmatives. Nothing for a person to do.</p>}
+            {escalation ? <p className="mt-2 text-[14px]"><span className="mono text-[11px] uppercase tracking-[0.08em] text-accent">{ESC_LABEL[escalation.type] || escalation.type}</span> · {escalation.message}</p> : decision.status === "OK" ? <p className="mt-2 text-[14px] text-ink-muted">Marked OK only because all three answers were clear affirmatives. Nothing for a person to do.</p> : <p className="mt-2 text-[14px] text-ink-muted">A person will follow up. Nothing here is guessed.</p>}
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href={`/ops/?select=${encodeURIComponent(residentId.current || "")}${isDemo() ? "&demo=1" : ""}`} className="btn btn-primary">See your pin on the map</Link>
               <button className="btn btn-secondary" onClick={() => { setPhase("idle"); }}>Call again</button>

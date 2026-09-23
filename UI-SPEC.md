@@ -33,7 +33,7 @@ See DEMO_SCRIPT.md.
 | S2 | /ops | ops room: map, KPIs, ticker, queue, drawer | S1 | Declare heat drill | loading, running, idle, error, empty-queue |
 | S3 | /answer | browser call: talk to Calltree | S2 "Get called yourself" | Answer the call | idle, ringing, speaking, listening, thinking, done, mic-denied, error |
 | S4 | /report?drill= | after-action report with proof numbers | S2 | Download JSON | loading, ready, not-found |
-| S5 | /_kit | every component in every state | direct | — | — |
+| S5 | /kit | every component in every state | direct | — | — |
 
 ## 3. Flow map
 S1 --Open ops--> S2(idle, last drill visible) --Declare--> S2(running) --complete--> S2(idle)

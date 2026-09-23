@@ -70,3 +70,12 @@ test('findPhrase respects word boundaries', () => {
   assert.equal(findPhrase('the fan is on', ['fan']), 'fan');
   assert.equal(findPhrase('I fell', ['fell']), 'fell');
 });
+
+test('"I\'m okay, thank you" filed under NeedsNothing on question 1 still counts as affirmative', () => {
+  const d = decide([fine(1, "I'm okay, thank you.", 'NeedsNothing', 0.82), threeGood[1], threeGood[2]]);
+  assert.equal(d.status, STATUS.OK);
+});
+test('"No, nothing" on question 1 is not an affirmative', () => {
+  const d = decide([fine(1, 'No, nothing.', 'NeedsNothing', 0.9), threeGood[1], threeGood[2]]);
+  assert.equal(d.status, STATUS.UNSURE);
+});

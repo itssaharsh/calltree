@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { Map as MLMap, NavigationControl, type GeoJSONSource, type MapMouseEvent, type ErrorEvent } from "maplibre-gl";
+import { Map as MLMap, NavigationControl, setWorkerUrl, type GeoJSONSource, type MapMouseEvent, type ErrorEvent } from "maplibre-gl";
 import type { Resident } from "@/lib/types";
 import { STATUS_COLOR } from "@/lib/format";
 
@@ -26,6 +26,7 @@ export function MapView({ residents, center, styleUrl, selected, onSelect }: { r
 
   useEffect(() => {
     if (!el.current || map.current) return;
+    setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
     const m = new MLMap({ container: el.current, style: styleUrl || FALLBACK_STYLE, center: [center.lon, center.lat], zoom: 13.1, attributionControl: { compact: true }, cooperativeGestures: false });
     m.addControl(new NavigationControl({ showCompass: false }), "bottom-right");
     m.on("error", (e: ErrorEvent) => { if (styleUrl && String(e?.error?.message || "").match(/style|403|401/i) && m.getStyle()?.name !== "fallback") { try { m.setStyle(FALLBACK_STYLE); } catch { /* ignore */ } } });

@@ -93,9 +93,14 @@ export function decide(turns = []) {
   const needWord = ['NeedsNothing', 'FeelingFine'].includes(q3.intent) && conf(q3) >= 0.6 ? null : findPhrase(q3.transcript, NEEDS_WORDS);
   if (needWord) return out(STATUS.NEEDS, 'request-phrase', q3, needWord);
 
-  // 5. OK only on three affirmatives.
+  // 5. OK only on three affirmatives. "I'm okay, thank you" can land in NeedsNothing on question 1;
+  //    a fine-word with no not-fine phrase counts as the affirmative.
+  const FINE_WORDS = ['fine', 'okay', 'ok', 'alright', 'good', 'well', 'great'];
+  const q1Affirmative =
+    (q1.intent === 'FeelingFine' && conf(q1) >= 0.7) ||
+    (['NeedsNothing', 'HasCooling'].includes(q1.intent) && conf(q1) >= 0.7 && !!findPhrase(q1.transcript, FINE_WORDS));
   const affirmative =
-    q1.intent === 'FeelingFine' && conf(q1) >= 0.7 &&
+    q1Affirmative &&
     q2.intent === 'HasCooling' && conf(q2) >= 0.6 &&
     ['NeedsNothing', 'FeelingFine'].includes(q3.intent) && conf(q3) >= 0.6;
   if (affirmative) return out(STATUS.OK, 'three-affirmatives', q1);
