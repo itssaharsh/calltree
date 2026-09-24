@@ -24,7 +24,7 @@ When a heat warning hits, Calltree phones every isolated elderly person on the t
 
 ## What a judge sees in two minutes
 
-1. Open the ops room. The map already shows the last drill. Click **Declare heat drill**: 100 pins turn green, amber, red and grey in call order while the ticker prints the deciding quote for each call. The whole register is reached in about 75 seconds of simulated calling.
+1. Open the ops room. The town is a 3D map with one column per resident, and the last drill is already standing. Click **Declare heat drill**: the status surface flips to cobalt, eight lines dial, and columns rise green, amber and red in call order (red is tallest, because that is where a person is needed) while the dispatch log prints the deciding quote for each call. The whole register is reached in about 75 seconds of simulated calling.
 2. Click a red pin. "I'm fine, just a bit light-headed." URGENT, neighbour alerted at +38 s, the deciding phrase underlined in the transcript.
 3. **Get called yourself.** Type a first name and answer the call in your own voice (Chrome or Edge with a microphone; or type). Say "I feel dizzy" on purpose. Your pin appears on the map, red, with your quote.
 4. **View report**: time to reach everyone, reach rate, escalations, cost per resident (about a cent), and the classifier evaluation table.

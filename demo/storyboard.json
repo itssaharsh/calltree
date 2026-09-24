@@ -20,15 +20,15 @@
   "dsf": 2,
   "palette": {
    "bg": [
-    "#0E1220",
-    "#151A2B",
-    "#2B3249"
+    "#0B1430",
+    "#1B2FA8",
+    "#2C44C6"
    ],
-   "accent": "#FFA41B",
-   "site_bg": "#0E1220",
-   "chrome": "dark",
-   "font": "Funnel Sans",
-   "display_font": "Funnel Display"
+   "accent": "#9FB0FF",
+   "site_bg": "#EFECE5",
+   "chrome": "light",
+   "font": "Instrument Sans",
+   "display_font": "Schibsted Grotesk"
   }
  },
  "pronounce": {
@@ -67,7 +67,7 @@
   {
    "id": "ops",
    "type": "live",
-   "say": "Meet Calltree. One click, and every name on the register gets a call, eight lines at a time. Pins turn green when residents are fine, amber when they need water or a fan, red when something is wrong. Every call ends with the quote that decided it.",
+   "say": "Meet Calltree. One click, and every name on the register gets a call, eight lines at a time. Each resident is a column on the town: green when they are fine, amber when they need water or a fan, red and tall when something is wrong. Every call ends with the quote that decided it.",
    "actions": [
     {
      "do": "wait",
@@ -91,9 +91,9 @@
     },
     {
      "do": "camera",
-     "focus": "[aria-label^='Map of registered']",
-     "zoom": 1.2,
-     "at": "Pins"
+     "focus": "[aria-label^='3D map']",
+     "zoom": 1.15,
+     "at": "column"
     },
     {
      "do": "wait",

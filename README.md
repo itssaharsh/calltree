@@ -26,10 +26,12 @@ The city's tool today is a spreadsheet and a volunteer phone tree. It takes two 
 4. **Code decides, not a prompt.** OK requires three clear affirmatives. Anything on the never-OK list ("light-headed", "fell", "chest") is urgent. Anything unclear goes to a person. [`decide.mjs`](backend/src/lib/decide.mjs) is 120 lines, unit tested, and scored on 60 labelled calls with a hard gate: zero URGENT or UNSURE calls may come out OK.
 5. **A person acts.** A neighbour is called for urgent cases, staff call back the unclear ones, a delivery goes to anyone without cooling, a visit is queued after two no-answers. Every escalation stays in the queue until someone marks it resolved.
 
+![Calltree: the town as a 3D map, one column per resident, height and colour by call outcome](app/public/og.png)
+
 ## Try it in two minutes
 
-- Open **https://main.dk4896o2qx1ht.amplifyapp.com/ops/**. The map already shows the last drill. Click **Declare heat drill** and watch 100 pins turn green, amber, red and grey in call order while the ticker prints the deciding quote for each.
-- Click the red pin: "I'm fine, just a bit light-headed." Marked URGENT because "light-headed" is on the never-OK list, neighbour alerted.
+- Open **https://main.dk4896o2qx1ht.amplifyapp.com/ops/**. The town is a 3D map with one column per resident; the last drill is already standing. Click **Declare heat drill**: the status surface flips to cobalt, eight lines start dialing, and columns rise green, amber and red in call order while the dispatch log prints the deciding quote for each call.
+- Click a red column, or its row in the log: "I'm fine, just a bit light-headed." Marked URGENT because "light-headed" is on the never-OK list and underlined in the transcript; the neighbour alert is recorded.
 - Open **Get called yourself**, type a first name, answer the call in your own voice (Chrome or Edge with a microphone, or type). Say "I feel dizzy" on purpose. Your pin appears on the map, red, with your quote.
 - Open **View report** for the numbers: time to reach everyone, reach rate, escalations, cost per resident, and the classifier evaluation table.
 
