@@ -165,7 +165,7 @@
     },
     {
      "do": "eval",
-     "js": "(() => { if (document.querySelector('[aria-label=\"Decision\"]')) return 'open'; const row = [...document.querySelectorAll('button')].find(x => x.textContent.includes('light-headed')); const name = row ? row.querySelector('span span')?.textContent : null; return 'fallback ' + (name || 'none'); })()"
+     "js": "(() => { if (document.querySelector('[aria-label=\"Decision\"]')) return 'open'; const row = [...document.querySelectorAll('button[data-resident]')].find(x => x.textContent.includes('light-headed')); if (row && window.__calltreeSelect) { window.__calltreeSelect(row.dataset.resident); return 'fallback ' + row.dataset.resident; } return 'none'; })()"
     },
     {
      "do": "wait",

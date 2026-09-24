@@ -23,7 +23,7 @@ export function Ticker({ calls, selected, onSelect, empty }: { calls: Call[]; se
       <AnimatePresence initial={stagger}>
         {rows.map((c, i) => (
           <motion.li key={c.SK} layout="position" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} transition={{ type: "spring", visualDuration: 0.3, bounce: 0, delay: stagger ? Math.min(i, 24) * 0.03 : 0 }} className="hairline first:border-t-0">
-            <button onClick={() => onSelect(c.residentId)} aria-pressed={selected === c.residentId} className={`grid w-full grid-cols-[58px_1fr_auto] items-start gap-x-3 px-4 py-2.5 text-left hover:bg-surface-2 ${selected === c.residentId ? "bg-accent-soft" : ""}`}>
+            <button data-resident={c.residentId} onClick={() => onSelect(c.residentId)} aria-pressed={selected === c.residentId} className={`grid w-full grid-cols-[58px_1fr_auto] items-start gap-x-3 px-4 py-2.5 text-left hover:bg-surface-2 ${selected === c.residentId ? "bg-accent-soft" : ""}`}>
               <span className="mono pt-0.5 text-[11px] text-ink-muted">{timeHM(c.endedAt).slice(0, 8)}</span>
               <span className="min-w-0">
                 <span className="block truncate text-[14px] font-semibold">{c.name}{c.attempt > 1 && <span className="ml-1 font-normal text-ink-muted">· 2nd try</span>}{c.carrier === "browser" && <span className="ml-1 font-normal text-accent">· browser</span>}</span>
