@@ -62,7 +62,8 @@
     "value": "2 days",
     "label": "A city's heat check-in today: a spreadsheet and a volunteer phone tree",
     "sub": "Half the people on French heat registers were hard to reach in 2025 (UNCCAS)"
-   }
+   },
+   "speed": 0.9
   },
   {
    "id": "ops",
@@ -114,7 +115,8 @@
      "do": "pause",
      "ms": 1400
     }
-   ]
+   ],
+   "speed": 0.9
   },
   {
    "id": "drawer",
@@ -130,6 +132,14 @@
      "do": "wait",
      "for": "button:has-text('light-headed')",
      "timeout": 30000
+    },
+    {
+     "do": "eval",
+     "js": "(() => { const b = [...document.querySelectorAll('button')].find(x => x.textContent.includes('light-headed')); if (b) b.scrollIntoView({ block: 'center' }); return b ? 'scrolled' : 'none'; })()"
+    },
+    {
+     "do": "pause",
+     "ms": 700
     },
     {
      "do": "click",
@@ -321,7 +331,8 @@
      "do": "pause",
      "ms": 1800
     }
-   ]
+   ],
+   "speed": 0.9
   },
   {
    "id": "tech",

@@ -125,7 +125,7 @@ export function OpsRoom() {
           )}
                     <div className="pointer-events-none absolute left-3 top-3 flex w-[min(360px,calc(100%-24px))] flex-col gap-2 [&>*]:pointer-events-auto">
             <StatusPanel alert={state?.alert || null} drill={state?.drill || null} zone={config?.zone || "AZZ544"} town={config?.town || "Maryvale, Phoenix AZ"} reached={state?.drill?.reached} />
-            <ReachPanel counts={state?.drill?.counts || null} metrics={state?.drill?.metrics || null} reached={state?.drill?.reached} running={running} loading={loading} />
+            <ReachPanel counts={state?.drill?.counts || null} metrics={state?.drill?.metrics || null} reached={state?.drill?.reached} running={running} loading={loading} registerSize={state?.drill?.total || residents.filter((r) => r.kind === "seed").length} />
           </div>
           <aside className="panel absolute right-3 top-3 bottom-3 z-10 hidden w-[380px] flex-col overflow-hidden md:flex" aria-label="Dispatch log and queue">{rail}</aside>
           <Drawer resident={selectedResident} calls={selectedCalls} onClose={() => setSelected(null)} />

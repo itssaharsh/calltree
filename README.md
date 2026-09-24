@@ -28,6 +28,10 @@ The city's tool today is a spreadsheet and a volunteer phone tree. It takes two 
 
 ![Calltree: the town as a 3D map, one column per resident, height and colour by call outcome](app/public/og.png)
 
+| A heat drill on the 3D map | Answering the call yourself |
+|---|---|
+| ![The status surface flips to cobalt, eight lines dial, and columns rise green, amber and red as calls complete](docs/media/drill.gif) | ![The browser call: Polly asks, Lex understands each typed answer, the decision stamp says URGENT](docs/media/call.gif) |
+
 ## Try it in two minutes
 
 - Open **https://main.dk4896o2qx1ht.amplifyapp.com/ops/**. The town is a 3D map with one column per resident; the last drill is already standing. Click **Declare heat drill**: the status surface flips to cobalt, eight lines start dialing, and columns rise green, amber and red in call order while the dispatch log prints the deciding quote for each call.

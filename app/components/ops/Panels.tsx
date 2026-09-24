@@ -44,10 +44,10 @@ export function StatusPanel({ alert, drill, zone, town, reached }: { alert: Aler
 
 const LEGEND: [Extract<Status, "OK" | "NEEDS" | "URGENT" | "UNSURE" | "NO_ANSWER">, string][] = [["OK", "fine"], ["NEEDS", "needs"], ["URGENT", "urgent"], ["UNSURE", "unsure"], ["NO_ANSWER", "no answer"]];
 
-export function ReachPanel({ counts, metrics, reached, running, loading }: { counts: Counts | null; metrics: Metrics | null; reached?: number; running: boolean; loading?: boolean }) {
+export function ReachPanel({ counts, metrics, reached, running, loading, registerSize }: { counts: Counts | null; metrics: Metrics | null; reached?: number; running: boolean; loading?: boolean; registerSize?: number }) {
   if (loading) return <div className="panel p-4"><div className="sk h-16 w-40" /><div className="sk mt-3 h-4 w-64" /></div>;
   const c = counts || { total: 0, OK: 0, NEEDS: 0, URGENT: 0, UNSURE: 0, NO_ANSWER: 0, IN_PROGRESS: 0 };
-  const total = c.total || 100;
+  const total = Math.max(registerSize || 0, c.total || 0) || 100;
   const dialing = Math.min(8, c.IN_PROGRESS || 0);
   return (
     <div className="panel px-4 py-3" aria-label="Drill totals">
