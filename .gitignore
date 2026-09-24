@@ -16,3 +16,5 @@ demo/voice/
 demo/build/
 demo/recon/
 demo/mic.wav
+demo/rt/
+*.webm

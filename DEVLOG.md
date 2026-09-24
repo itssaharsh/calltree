@@ -30,4 +30,6 @@ How Calltree was built, in order, with what the coding agent did and what it got
 
 | 24 Sep 13:50 | Two recording attempts stalled in lockstep capture: the column animation re-uploaded all 100 polygons to the MapLibre worker every frame while a drill ran. Heights, colours and the dialing pulse now live in feature-state; geometry is uploaded once. Capture at 1× pixel density, 12 fps. README GIFs recorded from the live site with Playwright. | agent |
 
+| 24 Sep 15:30 | Four lockstep-capture attempts of the demo video stalled on the WebGL map (one input dispatch hung for 50 min). Switched to a real-time Playwright recording with scene marks and the browser call's own Polly audio captured from the API responses, then a custom ffmpeg assembler: cards from the kit's overlays, live cuts in the window chrome, Kokoro narration at the marks, burned-in captions, ducked music, loudness at −14 LUFS. Repo made public. | agent |
+
 Each MCP tool call is visible in CloudTrail for account 277025716889 with user agent `aws-mcp`. Screenshots of the agent's session are in `docs/proof/`.
