@@ -19,4 +19,7 @@ How Calltree was built, in order, with what the coding agent did and what it got
 | 20:53 | Live Lex evaluation over the 60 labelled calls: 58/60 on the first run. The two misses were "I'm okay, thank you" answers that Lex files under NeedsNothing; the rule now accepts a fine-word under that intent on question one. Second run 60/60, zero unsafe, published to the API. | agent |
 | 20:58 | Screenshot QA at 390/1024/1440: MapLibre's web worker failed to load from the bundle (blank map), and component CSS outside `@layer` beat Tailwind's `hidden` utility (horizontal scroll on phones). Worker served from `public/`, classes moved into `@layer components`. | agent |
 
+| 21:05 | Frontend live on Amplify Hosting (manual zip deploy of the static export). The ops-room map was blank: MapLibre's stylesheet forces `position: relative` on its container and beat the `absolute` utility, collapsing the region to 0 px. Fixed with an inline-sized wrapper; fixed-height shell on desktop. Repo pushed to GitHub. | agent |
+| 21:15 | Demo video kit (Chromium lockstep capture, Kokoro TTS, OpenCV edit, Whisper QA) set up; storyboard written from DEMO_SCRIPT.md. | agent |
+
 Each MCP tool call is visible in CloudTrail for account 277025716889 with user agent `aws-mcp`. Screenshots of the agent's session are in `docs/proof/`.

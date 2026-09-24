@@ -10,3 +10,9 @@ __pycache__/
 *.pyc
 .DS_Store
 samconfig.toml
+demo/rec/
+demo/probe/
+demo/voice/
+demo/build/
+demo/recon/
+demo/mic.wav
