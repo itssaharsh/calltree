@@ -60,5 +60,9 @@ export function MapView({ residents, center, styleUrl, selected, onSelect }: { r
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);
 
-  return <div ref={el} className="absolute inset-0" role="region" aria-label="Map of registered residents; pins are coloured by call outcome" />;
+  return (
+    <div className="absolute inset-0" role="region" aria-label="Map of registered residents; pins are coloured by call outcome">
+      <div ref={el} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+    </div>
+  );
 }
