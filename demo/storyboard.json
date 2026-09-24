@@ -12,12 +12,12 @@
   "music": "calm",
   "sfx": true,
   "gpu": true,
-  "fps": 15,
+  "fps": 12,
   "viewport": [
    1280,
    720
   ],
-  "dsf": 2,
+  "dsf": 1,
   "palette": {
    "bg": [
     "#0B1430",

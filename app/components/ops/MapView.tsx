@@ -16,7 +16,7 @@ const LIGHT_STYLE = {
     { id: "labels", type: "raster" as const, source: "labels", paint: { "raster-opacity": 0.85 } },
   ],
 };
-type Feat = { id: string; status: string; color: string; h: number; target: number; from: number; t0: number; selected: boolean; dialing: boolean; visitor: boolean; noAnswer: boolean; lon: number; lat: number };
+type Anim = { id: string; status: string; color: string; h: number; from: number; target: number; t0: number; dialing: boolean };
 
 /** A small octagon around a point, in degrees, so it can be extruded into a column. */
 function octagon(lon: number, lat: number, r: number) {
@@ -25,6 +25,7 @@ function octagon(lon: number, lat: number, r: number) {
   return { type: "Polygon" as const, coordinates: [ring] };
 }
 const heightFor = (status: string, selected: boolean) => (STATUS_HEIGHT[status as keyof typeof STATUS_HEIGHT] ?? 5) + (selected ? 14 : 0);
+const colorFor = (status: string) => STATUS_COLOR[status as keyof typeof STATUS_COLOR] || STATUS_COLOR.PENDING;
 
 export function MapView({ residents, center, styleUrl, selected, onSelect, running, orbit = false, interactive = true, zoom = 14.1 }: {
   residents: Resident[]; center: { lat: number; lon: number }; styleUrl: string | null; selected: string | null; onSelect: (id: string | null) => void; running?: boolean; orbit?: boolean; interactive?: boolean; zoom?: number;
@@ -32,22 +33,18 @@ export function MapView({ residents, center, styleUrl, selected, onSelect, runni
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<MLMap | null>(null);
   const ready = useRef(false);
-  const feats = useRef<Map<string, Feat>>(new Map());
+  const anims = useRef<Map<string, Anim>>(new Map());
+  const geomIds = useRef<string>("");
   const latest = useRef({ residents, selected, running });
   latest.current = { residents, selected, running };
   const raf = useRef<number | null>(null);
 
-  const build = (now: number) => ({
+  // Geometry is uploaded only when the set of residents changes; everything that moves lives in feature-state.
+  const geometry = () => ({
     type: "FeatureCollection" as const,
-    features: [...feats.current.values()].map((f) => {
-      const p = Math.min(1, (now - f.t0) / 650); const e = 1 - Math.pow(1 - p, 3);
-      let h = f.from + (f.target - f.from) * e;
-      if (f.dialing && latest.current.running) h = f.target + 10 * Math.abs(Math.sin(now / 240));
-      f.h = h;
-      return { type: "Feature" as const, geometry: octagon(f.lon, f.lat, f.visitor ? 19 : 15), properties: { id: f.id, status: f.status, color: f.color, h, selected: f.selected, noAnswer: f.noAnswer, visitor: f.visitor } };
-    }),
+    features: latest.current.residents.map((r) => ({ type: "Feature" as const, id: r.id, geometry: octagon(r.lon, r.lat, r.kind === "visitor" ? 19 : 15), properties: { id: r.id, h0: 5, color: colorFor(r.last?.outcome || "PENDING") } })),
   });
-  const bases = () => ({ type: "FeatureCollection" as const, features: [...feats.current.values()].map((f) => ({ type: "Feature" as const, geometry: { type: "Point" as const, coordinates: [f.lon, f.lat] }, properties: { id: f.id, color: f.color, selected: f.selected, noAnswer: f.noAnswer } })) });
+  const bases = () => ({ type: "FeatureCollection" as const, features: latest.current.residents.map((r) => ({ type: "Feature" as const, id: r.id, geometry: { type: "Point" as const, coordinates: [r.lon, r.lat] }, properties: { id: r.id, color: colorFor(r.last?.outcome || "PENDING") } })) });
 
   useEffect(() => {
     if (!el.current || map.current) return;
@@ -57,10 +54,11 @@ export function MapView({ residents, center, styleUrl, selected, onSelect, runni
     m.on("error", (e: ErrorEvent) => { if (styleUrl && String(e?.error?.message || "").match(/style|403|401/i)) { try { m.setStyle(LIGHT_STYLE); } catch { /* ignore */ } } });
     m.on("load", () => {
       try { m.setLight({ anchor: "viewport", color: "#ffffff", intensity: 0.45, position: [1.15, 200, 35] }); } catch { /* older API */ }
-      m.addSource("bases", { type: "geojson", data: bases() });
-      m.addLayer({ id: "bases", type: "circle", source: "bases", paint: { "circle-radius": 11, "circle-color": ["get", "color"], "circle-opacity": 0.22, "circle-stroke-color": ["case", ["get", "selected"], "#1F3BD6", ["get", "noAnswer"], "#E3402C", "rgba(0,0,0,0)"], "circle-stroke-width": 2, "circle-pitch-alignment": "map" } });
-      m.addSource("columns", { type: "geojson", data: build(performance.now()) });
-      m.addLayer({ id: "columns", type: "fill-extrusion", source: "columns", paint: { "fill-extrusion-color": ["get", "color"], "fill-extrusion-height": ["get", "h"], "fill-extrusion-base": 0, "fill-extrusion-opacity": 1, "fill-extrusion-vertical-gradient": true } });
+      m.addSource("bases", { type: "geojson", data: bases(), promoteId: "id" });
+      m.addLayer({ id: "bases", type: "circle", source: "bases", paint: { "circle-radius": 11, "circle-color": ["coalesce", ["feature-state", "color"], ["get", "color"]], "circle-opacity": 0.22, "circle-stroke-color": ["case", ["boolean", ["feature-state", "selected"], false], "#1F3BD6", ["boolean", ["feature-state", "noAnswer"], false], "#E3402C", "rgba(0,0,0,0)"], "circle-stroke-width": 2, "circle-pitch-alignment": "map" } });
+      m.addSource("columns", { type: "geojson", data: geometry(), promoteId: "id" });
+      m.addLayer({ id: "columns", type: "fill-extrusion", source: "columns", paint: { "fill-extrusion-color": ["coalesce", ["feature-state", "color"], ["get", "color"]], "fill-extrusion-height": ["coalesce", ["feature-state", "h"], ["get", "h0"]], "fill-extrusion-base": 0, "fill-extrusion-opacity": 1, "fill-extrusion-vertical-gradient": true } });
+      geomIds.current = latest.current.residents.map((r) => r.id).join(",");
       if (interactive) {
         m.on("click", "columns", (e: MapMouseEvent & { features?: { properties?: Record<string, unknown> }[] }) => { const f = e.features?.[0]; if (f) onSelect(String(f.properties?.id)); });
         m.on("click", (e: MapMouseEvent) => { const fs = m.queryRenderedFeatures(e.point, { layers: ["columns", "bases"] }); if (!fs.length) onSelect(null); });
@@ -78,26 +76,35 @@ export function MapView({ residents, center, styleUrl, selected, onSelect, runni
   const sync = () => {
     const m = map.current; if (!m || !ready.current) return;
     const now = performance.now();
-    const seen = new Set<string>();
+    const ids = latest.current.residents.map((r) => r.id).join(",");
+    if (ids !== geomIds.current) { (m.getSource("columns") as GeoJSONSource | undefined)?.setData(geometry()); (m.getSource("bases") as GeoJSONSource | undefined)?.setData(bases()); geomIds.current = ids; }
+    const changed: Anim[] = [];
     for (const r of latest.current.residents) {
       const status = r.last?.outcome || "PENDING";
       const sel = r.id === latest.current.selected;
       const target = heightFor(status, sel);
-      const prev = feats.current.get(r.id);
-      seen.add(r.id);
-      if (!prev) feats.current.set(r.id, { id: r.id, status, color: STATUS_COLOR[status as keyof typeof STATUS_COLOR] || STATUS_COLOR.PENDING, h: 0, from: 0, target, t0: now, selected: sel, dialing: status === "IN_PROGRESS", visitor: r.kind === "visitor", noAnswer: status === "NO_ANSWER", lon: r.lon, lat: r.lat });
-      else if (prev.status !== status || prev.selected !== sel) Object.assign(prev, { status, color: STATUS_COLOR[status as keyof typeof STATUS_COLOR] || STATUS_COLOR.PENDING, from: prev.h, target, t0: now, selected: sel, dialing: status === "IN_PROGRESS", noAnswer: status === "NO_ANSWER" });
+      const prev = anims.current.get(r.id);
+      const a: Anim = prev || { id: r.id, status: "", color: "", h: 0, from: 0, target: 0, t0: now, dialing: false };
+      if (!prev || a.status !== status || a.target !== target) { a.from = a.h; a.target = target; a.t0 = now; a.status = status; a.color = colorFor(status); a.dialing = status === "IN_PROGRESS"; anims.current.set(r.id, a); changed.push(a); }
+      m.setFeatureState({ source: "columns", id: r.id }, { color: a.color });
+      m.setFeatureState({ source: "bases", id: r.id }, { color: a.color, selected: sel, noAnswer: status === "NO_ANSWER" });
     }
-    for (const k of [...feats.current.keys()]) if (!seen.has(k)) feats.current.delete(k);
-    (m.getSource("bases") as GeoJSONSource | undefined)?.setData(bases());
+    for (const k of [...anims.current.keys()]) if (!latest.current.residents.some((r) => r.id === k)) anims.current.delete(k);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const t0 = now;
     const loop = (t: number) => {
-      (m.getSource("columns") as GeoJSONSource | undefined)?.setData(build(t));
-      if (orbit && !reduce) m.setBearing(m.getBearing() + 0.045);
-      const animating = [...feats.current.values()].some((f) => t - f.t0 < 700 || (f.dialing && latest.current.running));
-      if (!reduce && (animating || orbit || t - t0 < 700)) raf.current = requestAnimationFrame(loop);
+      let busy = false;
+      for (const a of anims.current.values()) {
+        const p = Math.min(1, (t - a.t0) / 650); const e = 1 - Math.pow(1 - p, 3);
+        let h = a.from + (a.target - a.from) * e;
+        if (a.dialing && latest.current.running) { h = a.target + 10 * Math.abs(Math.sin(t / 240)); busy = true; }
+        if (p < 1) busy = true;
+        if (p < 1 || a.dialing) { a.h = h; m.setFeatureState({ source: "columns", id: a.id }, { h }); }
+        else if (a.h !== a.target) { a.h = a.target; m.setFeatureState({ source: "columns", id: a.id }, { h: a.target }); }
+      }
+      if (orbit && !reduce) { m.setBearing(m.getBearing() + 0.045); busy = true; }
+      if (!reduce && busy) raf.current = requestAnimationFrame(loop);
     };
+    if (reduce) { for (const a of anims.current.values()) { a.h = a.target; m.setFeatureState({ source: "columns", id: a.id }, { h: a.target }); } return; }
     if (raf.current) cancelAnimationFrame(raf.current);
     raf.current = requestAnimationFrame(loop);
   };
