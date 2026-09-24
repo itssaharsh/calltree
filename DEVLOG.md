@@ -22,4 +22,7 @@ How Calltree was built, in order, with what the coding agent did and what it got
 | 21:05 | Frontend live on Amplify Hosting (manual zip deploy of the static export). The ops-room map was blank: MapLibre's stylesheet forces `position: relative` on its container and beat the `absolute` utility, collapsing the region to 0 px. Fixed with an inline-sized wrapper; fixed-height shell on desktop. Repo pushed to GitHub. | agent |
 | 21:15 | Demo video kit (Chromium lockstep capture, Kokoro TTS, OpenCV edit, Whisper QA) set up; storyboard written from DEMO_SCRIPT.md. | agent |
 
+| 24 Sep 02:40 | Builder feedback: the UI was a generic dark dashboard, not the derived design the UI skill asks for, and the idea skill had been anchored on a previous voice win. Skill patched (modality check, kill filter K7, Voxmorph reframed as shape not modality). | builder + agent |
+| 24 Sep 03:20 | Design pass on every screen: full-bleed map stage with status and reach panels, dialing-line indicator, dispatch-log rail with the deciding phrase underlined, pins that ring on change and blink while dialing, decision stamps, an oversized numeral band and call-log excerpts on the landing, a handset-style call screen, brand mark, OG image and icons. Screenshot QA at three widths caught one hydration mismatch (a build-time clock), fixed. | agent |
+
 Each MCP tool call is visible in CloudTrail for account 277025716889 with user agent `aws-mcp`. Screenshots of the agent's session are in `docs/proof/`.

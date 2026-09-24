@@ -4,7 +4,6 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { getJSON, postJSON, forcedState, isDemo } from "@/lib/api";
 import type { BrowserTurnResponse, Decision, Turn } from "@/lib/types";
-import { StatusChip } from "@/components/StatusChip";
 import { Mark } from "@/components/Wordmark";
 import { RULE_LABEL, ESC_LABEL } from "@/lib/format";
 
@@ -105,75 +104,73 @@ export function CallCard({ presetName }: { presetName?: string }) {
   const submitTyped = (e: React.FormEvent) => { e.preventDefault(); if (!typed.trim()) return; const t = typed; setTyped(""); void send({ text: t }); };
 
   const ringColor = phase === "listening" ? "#4CC38A" : phase === "speaking" ? "#FFA41B" : phase === "thinking" ? "#F3E6CF" : "#3E4766";
+  const stage = phase === "idle" ? "City heat check-in" : phase === "ringing" ? "Ringing…" : phase === "speaking" ? `Speaking · question ${Math.max(1, q)} of 3` : phase === "listening" ? (useText ? "Your turn · type your answer" : "Listening · speak now") : phase === "thinking" ? "Understanding…" : phase === "done" ? "Call ended" : phase === "mic-denied" ? "Microphone blocked · type instead" : "Call dropped";
+  const timer = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
   return (
-    <div className="mx-auto flex w-full max-w-[520px] flex-col gap-4 px-4 py-8">
-      <div className="card relative overflow-hidden p-6">
+    <div className="mx-auto flex w-full max-w-[560px] flex-col gap-4 px-4 py-8">
+      <div className="panel-strong relative overflow-hidden">
         <div className="lamp pointer-events-none absolute inset-0" aria-hidden />
-        <div className="relative flex flex-col items-center gap-3 text-center">
-          <div className="relative flex h-24 w-24 items-center justify-center rounded-full border-2 transition-colors duration-200" style={{ borderColor: ringColor, boxShadow: phase === "listening" ? `0 0 0 ${4 + level * 18}px rgba(76,195,138,${0.12 + level * 0.2})` : undefined }}>
-            <Mark size={44} live={phase !== "idle" && phase !== "done"} />
+        <div className="relative flex items-center gap-4 px-5 pt-5">
+          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-200" style={{ borderColor: ringColor, boxShadow: phase === "listening" ? `0 0 0 ${3 + level * 16}px rgba(76,195,138,${0.14 + level * 0.25})` : phase === "speaking" ? "0 0 0 6px rgba(255,164,27,0.16)" : undefined }}>
+            <Mark size={32} live={phase !== "idle" && phase !== "done"} />
           </div>
-          <div>
-            <p className="font-display text-[22px] font-extrabold">Calltree</p>
-            <p className="mono text-[13px] text-ink-muted" aria-live="polite">
-              {phase === "idle" && "City heat check-in"}
-              {phase === "ringing" && "Ringing…"}
-              {phase === "speaking" && `Speaking · question ${Math.max(1, q)} of 3`}
-              {phase === "listening" && (useText ? "Your turn · type your answer" : "Listening · speak now")}
-              {phase === "thinking" && "Understanding…"}
-              {phase === "done" && "Call ended"}
-              {phase === "mic-denied" && "Microphone blocked · type instead"}
-              {phase === "error" && "Call dropped"}
-              {phase !== "idle" && ` · ${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`}
-            </p>
+          <div className="min-w-0 flex-1">
+            <p className="font-display text-[22px] font-extrabold leading-none">Calltree</p>
+            <p className="mono mt-1 truncate text-[12px] text-ink-muted" aria-live="polite">{stage}</p>
           </div>
-          {phase === "listening" && !useText && (
-            <div className="flex h-6 items-end gap-1" aria-hidden>{[0.3, 0.6, 1, 0.6, 0.3].map((k, i) => <span key={i} className="w-1.5 rounded-sm bg-success transition-[height] duration-75" style={{ height: `${4 + level * 20 * k}px` }} />)}</div>
-          )}
+          <div className="text-right">
+            <p className="mono text-[20px] font-semibold leading-none">{phase === "idle" ? "00:00" : timer}</p>
+            <ol className="mt-1.5 flex justify-end gap-1" aria-label={`Question ${Math.max(1, q)} of 3`}>{[1, 2, 3].map((n) => <li key={n} className={`h-1.5 w-5 rounded-[2px] ${n < q || phase === "done" ? "bg-success" : n === q && phase !== "idle" ? "bg-accent" : "bg-surface-3"}`} />)}</ol>
+          </div>
         </div>
-        <ol className="relative mt-5 flex max-h-[38vh] flex-col gap-2 overflow-y-auto scrollbar-thin" aria-label="Call transcript">
+        {phase === "listening" && !useText && (
+          <div className="relative mt-3 flex h-6 items-end justify-center gap-1" aria-hidden>{[0.3, 0.55, 0.8, 1, 0.8, 0.55, 0.3].map((k, i) => <span key={i} className="w-1.5 rounded-sm bg-success transition-[height] duration-75" style={{ height: `${3 + level * 22 * k}px` }} />)}</div>
+        )}
+        <ol className="scrollbar-thin relative mx-5 mt-4 flex max-h-[38vh] flex-col overflow-y-auto" aria-label="Call transcript">
           <AnimatePresence initial={false}>
             {lines.slice(-6).map((l, i) => (
-              <motion.li key={`${i}-${l.text.slice(0, 12)}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={`text-[15px] ${l.who === "you" ? "text-ink" : "text-ink-muted"}`}>
-                <span className="mono mr-2 text-[11px] uppercase tracking-[0.08em] text-ink-muted">{l.who === "you" ? "you" : "calltree"}</span>{l.who === "you" ? `“${l.text}”` : l.text}
-                {l.turn && <span className="mono ml-2 text-[11px] text-ink-muted">{l.turn.intent} {Math.round(l.turn.confidence * 100)}%</span>}
+              <motion.li key={`${i}-${l.text.slice(0, 12)}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="hairline grid grid-cols-[58px_1fr] gap-x-3 py-2.5 first:border-t-0">
+                <span className="label pt-1">{l.who === "you" ? (name.trim() || "you").split(" ")[0].toLowerCase().slice(0, 8) : "calltree"}</span>
+                <span className={`text-[15px] leading-snug ${l.who === "you" ? "text-ink" : "text-ink-muted"}`}>{l.who === "you" ? `“${l.text}”` : l.text}{l.turn && <span className="mono ml-2 text-[11px] text-ink-muted">{l.turn.intent} {Math.round(l.turn.confidence * 100)}%</span>}</span>
               </motion.li>
             ))}
           </AnimatePresence>
         </ol>
-        {phase === "idle" && (
-          <form className="relative mt-5 flex flex-col gap-3" onSubmit={(e) => { e.preventDefault(); void start(); }}>
-            <label className="text-[14px] text-ink-muted" htmlFor="name">Your first name, so Calltree can greet you</label>
-            <input id="name" className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Rosa" maxLength={40} autoComplete="given-name" />
-            <button type="submit" className="btn btn-primary btn-lg">Answer the call</button>
-            <p className="text-[13px] text-ink-muted">Three questions, about a minute. Say “I feel dizzy” to see the escalation path. Chrome or Edge with a microphone works best; you can type instead.</p>
-          </form>
-        )}
-        {(phase === "listening" || phase === "mic-denied") && (useText || !lexLive) && (
-          <form className="relative mt-4 flex gap-2" onSubmit={submitTyped}>
-            <input className="input" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={q === 1 ? "I'm fine, thank you" : q === 2 ? "Yes, the AC is on" : "No, nothing"} autoFocus aria-label="Your answer" />
-            <button type="submit" className="btn btn-primary">Send</button>
-          </form>
-        )}
-        {phase === "listening" && !useText && lexLive && (
-          <div className="relative mt-4 flex gap-2">
-            <button className="btn btn-secondary flex-1" onClick={() => stopRef.current?.()}>I'm done talking</button>
-            <button className="btn btn-ghost" onClick={() => { stopRef.current?.(); setUseText(true); }}>Type instead</button>
-          </div>
-        )}
-        {phase !== "idle" && phase !== "done" && phase !== "error" && (
-          <div className="relative mt-4 flex justify-center"><button className="btn btn-ghost text-danger" onClick={hangup}>Hang up</button></div>
-        )}
-        {phase === "error" && (
-          <div className="relative mt-4 flex flex-col gap-2" role="alert"><p className="text-[14px] text-danger">{error}</p><button className="btn btn-secondary" onClick={() => void start()}>Try again</button></div>
-        )}
+        <div className="relative px-5 pb-5">
+          {phase === "idle" && (
+            <form className="mt-2 flex flex-col gap-3" onSubmit={(e) => { e.preventDefault(); void start(); }}>
+              <label className="text-[14px] text-ink-muted" htmlFor="name">Your first name, so Calltree can greet you</label>
+              <input id="name" className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Rosa" maxLength={40} autoComplete="given-name" />
+              <button type="submit" className="btn btn-primary btn-lg">Answer the call</button>
+              <p className="text-[13px] text-ink-muted">Three questions, about a minute. Say “I feel dizzy” to see the escalation path. Chrome or Edge with a microphone works best; you can type instead.</p>
+            </form>
+          )}
+          {(phase === "listening" || phase === "mic-denied") && (useText || !lexLive) && (
+            <form className="mt-3 flex gap-2" onSubmit={submitTyped}>
+              <input className="input" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={q === 1 ? "I'm fine, thank you" : q === 2 ? "Yes, the AC is on" : "No, nothing"} autoFocus aria-label="Your answer" />
+              <button type="submit" className="btn btn-primary">Send</button>
+            </form>
+          )}
+          {phase === "listening" && !useText && lexLive && (
+            <div className="mt-3 flex gap-2">
+              <button className="btn btn-secondary flex-1" onClick={() => stopRef.current?.()}>I'm done talking</button>
+              <button className="btn btn-ghost" onClick={() => { stopRef.current?.(); setUseText(true); }}>Type instead</button>
+            </div>
+          )}
+          {phase !== "idle" && phase !== "done" && phase !== "error" && (
+            <div className="mt-3 flex justify-center"><button className="btn btn-ghost text-danger" onClick={hangup}>Hang up</button></div>
+          )}
+          {phase === "error" && (
+            <div className="mt-3 flex flex-col gap-2" role="alert"><p className="text-[14px] text-danger">{error}</p><button className="btn btn-secondary" onClick={() => void start()}>Try again</button></div>
+          )}
+        </div>
       </div>
       <AnimatePresence>
         {phase === "done" && decision && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="card p-5" role="status">
-            <div className="flex items-center gap-2"><StatusChip status={decision.status} /><span className="text-[14px] text-ink-muted">{RULE_LABEL[decision.rule] || decision.rule}</span></div>
-            {decision.evidenceQuote && <p className="mt-2 text-[16px]">“{decision.evidenceQuote}”</p>}
-            {escalation ? <p className="mt-2 text-[14px]"><span className="mono text-[11px] uppercase tracking-[0.08em] text-accent">{ESC_LABEL[escalation.type] || escalation.type}</span> · {escalation.message}</p> : decision.status === "OK" ? <p className="mt-2 text-[14px] text-ink-muted">Marked OK only because all three answers were clear affirmatives. Nothing for a person to do.</p> : <p className="mt-2 text-[14px] text-ink-muted">A person will follow up. Nothing here is guessed.</p>}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="panel p-5" role="status">
+            <div className="flex items-end justify-between gap-3"><span className={`stamp stamp-${decision.status} text-[40px]`}>{decision.status === "NO_ANSWER" ? "No answer" : decision.status.charAt(0) + decision.status.slice(1).toLowerCase()}</span><span className="text-right text-[13px] text-ink-muted">{RULE_LABEL[decision.rule] || decision.rule}</span></div>
+            {decision.evidenceQuote && <p className="mt-3 text-[18px] leading-snug">“{decision.evidencePhrase && decision.evidenceQuote.toLowerCase().includes(decision.evidencePhrase.toLowerCase()) ? <>{decision.evidenceQuote.slice(0, decision.evidenceQuote.toLowerCase().indexOf(decision.evidencePhrase.toLowerCase()))}<mark className="evidence bg-transparent">{decision.evidenceQuote.slice(decision.evidenceQuote.toLowerCase().indexOf(decision.evidencePhrase.toLowerCase()), decision.evidenceQuote.toLowerCase().indexOf(decision.evidencePhrase.toLowerCase()) + decision.evidencePhrase.length)}</mark>{decision.evidenceQuote.slice(decision.evidenceQuote.toLowerCase().indexOf(decision.evidencePhrase.toLowerCase()) + decision.evidencePhrase.length)}</> : decision.evidenceQuote}”</p>}
+            {escalation ? <p className="mt-3 text-[14px]"><span className="label text-accent">{ESC_LABEL[escalation.type] || escalation.type}</span> <span className="text-ink-muted">·</span> {escalation.message}</p> : decision.status === "OK" ? <p className="mt-3 text-[14px] text-ink-muted">OK only because all three answers were clear affirmatives. Nothing for a person to do.</p> : <p className="mt-3 text-[14px] text-ink-muted">A person will follow up. Nothing here is guessed.</p>}
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href={`/ops/?select=${encodeURIComponent(residentId.current || "")}${isDemo() ? "&demo=1" : ""}`} className="btn btn-primary">See your pin on the map</Link>
               <button className="btn btn-secondary" onClick={() => { setPhase("idle"); }}>Call again</button>
