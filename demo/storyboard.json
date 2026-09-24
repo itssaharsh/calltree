@@ -124,9 +124,25 @@
    "say": "This resident said she was fine, just a bit light-headed. Fine is not enough. Light-headed is on the never-OK list, so she is urgent, the phrase is underlined, and her emergency contact gets a call within a minute.",
    "actions": [
     {
+     "do": "eval",
+     "js": "window.__calltreeRefresh && window.__calltreeRefresh(); 'refreshing'"
+    },
+    {
+     "do": "pause",
+     "ms": 1500
+    },
+    {
+     "do": "eval",
+     "js": "window.__calltreeRefresh && window.__calltreeRefresh(); 'refreshing'"
+    },
+    {
+     "do": "pause",
+     "ms": 1500
+    },
+    {
      "do": "wait",
      "for": "text=8 lines \u00b7 idle",
-     "timeout": 150000
+     "timeout": 90000
     },
     {
      "do": "wait",
@@ -146,6 +162,10 @@
      "sel": "button:has-text('light-headed')",
      "at": "light-headed",
      "zoom": "out"
+    },
+    {
+     "do": "eval",
+     "js": "(() => { if (document.querySelector('[aria-label=\"Decision\"]')) return 'open'; const row = [...document.querySelectorAll('button')].find(x => x.textContent.includes('light-headed')); const name = row ? row.querySelector('span span')?.textContent : null; return 'fallback ' + (name || 'none'); })()"
     },
     {
      "do": "wait",
@@ -315,6 +335,19 @@
      "sel": "a:has-text('See your pin on the map')",
      "at": "pin",
      "zoom": "out"
+    },
+    {
+     "do": "wait",
+     "for": "text=Dispatch log",
+     "timeout": 60000
+    },
+    {
+     "do": "eval",
+     "js": "window.__calltreeRefresh && window.__calltreeRefresh(); 'refreshing'"
+    },
+    {
+     "do": "pause",
+     "ms": 1500
     },
     {
      "do": "wait",

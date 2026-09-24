@@ -36,6 +36,9 @@ export function OpsRoom() {
     refresh();
     const pre = new URLSearchParams(window.location.search).get("select");
     if (pre) setSelected(pre);
+    // demo tooling: the recorded walkthrough refreshes and selects through these
+    const w = window as unknown as { __calltreeRefresh?: () => Promise<void>; __calltreeSelect?: (id: string | null) => void };
+    w.__calltreeRefresh = refresh; w.__calltreeSelect = (id) => setSelected(id);
   }, [refresh, forced]);
 
   const running = !!state?.drill?.running;
