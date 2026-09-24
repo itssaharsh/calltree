@@ -19,7 +19,7 @@ h1{font-family:'Funnel Display';font-weight:800;font-size:60px;letter-spacing:-.
 <div style="position:absolute;left:72px;top:64px;display:flex;align-items:center;gap:14px"><div style="width:44px;height:44px">${mark}</div><span style="font-family:'Funnel Display';font-weight:800;font-size:34px;letter-spacing:-.03em">calltree</span></div>
 <div style="position:absolute;left:72px;top:150px"><div class="k">Heat-alert check-in calls for a town's register</div><h1>Every name on the list, reached within the hour.</h1><div class="s">Lex understands, code decides, a person is sent only where one is needed.</div></div>
 <div style="position:absolute;left:640px;top:80px;width:520px;height:520px;border-radius:24px;background:#151A2B;border:1px solid #2B3249;overflow:hidden"><div style="position:absolute;inset:0">${pins.replace(/left:(\d+\.?\d*)px/g, (m, x) => `left:${(+x - 640).toFixed(1)}px`).replace(/top:(\d+\.?\d*)px/g, (m, y) => `top:${(+y - 80).toFixed(1)}px`)}</div></div>
-<div class="u">main.dk4896o2qx1ht.amplifyapp.com · AWS Zero to Shipped 2026</div></body></html>`;
+<div class="u">main.dk4896o2qx1ht.amplifyapp.com</div></body></html>`;
 const apple = `<!doctype html><html><body style="margin:0;width:180px;height:180px;background:#0E1220;display:flex;align-items:center;justify-content:center"><div style="width:132px;height:132px">${mark}</div></body></html>`;
 const browser = await chromium.launch();
 const p = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
