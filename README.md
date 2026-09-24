@@ -83,7 +83,7 @@ scripts/deploy.sh                                   # SAM -> seed -> eval publis
 
 ## How the coding agent built it
 
-Claude Code, connected to this AWS account through the AWS MCP server (Agent Toolkit for AWS) with the same credentials as the console. The agent ran the account checks, discovered that Bedrock, Amazon Connect, Chime SDK PSTN and Amazon Location keys are all unavailable on this AISPL account, and changed the design each time: Lex instead of an LLM, a pluggable carrier instead of Connect, keyless tiles instead of a Location key. The full timeline with what it got wrong is in [`DEVLOG.md`](DEVLOG.md); the decisions are in [`docs/adr/`](docs/adr/).
+Claude Code, connected to this AWS account through the AWS MCP server (Agent Toolkit for AWS) with the same credentials as the console. The agent ran the account checks, discovered that Bedrock, Amazon Connect, Chime SDK PSTN and Amazon Location keys are all unavailable on this AISPL account, and changed the design each time: Lex instead of an LLM, a pluggable carrier instead of Connect, keyless tiles instead of a Location key. The full timeline with what it got wrong is in [`DEVLOG.md`](DEVLOG.md); the decisions are in [`docs/adr/`](docs/adr/); the design tokens are in [`docs/DESIGN.md`](docs/DESIGN.md) and the judged path in [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md).
 
 ## Limitations
 
