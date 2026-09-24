@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Funnel_Display, Funnel_Sans, Martian_Mono } from "next/font/google";
+import { Schibsted_Grotesk, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
 
-const display = Funnel_Display({ subsets: ["latin"], variable: "--ff-display", weight: ["600", "800"] });
-const body = Funnel_Sans({ subsets: ["latin"], variable: "--ff-body", weight: ["400", "600"] });
-const mono = Martian_Mono({ subsets: ["latin"], variable: "--ff-mono", weight: ["400", "600"] });
+const display = Schibsted_Grotesk({ subsets: ["latin"], variable: "--ff-display", weight: ["500", "800"] });
+const body = Instrument_Sans({ subsets: ["latin"], variable: "--ff-body", weight: ["400", "600"] });
+const mono = IBM_Plex_Mono({ subsets: ["latin"], variable: "--ff-mono", weight: ["400", "600"] });
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://calltree.example";
 
@@ -17,12 +17,12 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", images: ["/og.png"] },
 };
 
-export const viewport: Viewport = { themeColor: "#0E1220", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#EFECE5", width: "device-width", initialScale: 1 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" className={`${display.variable} ${body.variable} ${mono.variable} h-full`}>
-      <body className="min-h-full flex flex-col contours">{children}</body>
+    <html lang="en" data-theme="light" className={`${display.variable} ${body.variable} ${mono.variable} h-full`}>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

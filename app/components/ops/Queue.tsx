@@ -3,7 +3,8 @@ import { useState } from "react";
 import type { Escalation } from "@/lib/types";
 import { ESC_LABEL, timeHM } from "@/lib/format";
 
-const TONE: Record<string, string> = { neighbour: "text-danger", staff: "text-ink", supply: "text-warning", visit: "text-ink-muted" };
+const TONE: Record<string, string> = { neighbour: "text-danger", staff: "text-accent", supply: "text-warning", visit: "text-ink" };
+const BAR: Record<string, string> = { neighbour: "bg-danger", staff: "bg-accent", supply: "bg-[#F2B233]", visit: "bg-[#2B2F3A]" };
 
 export function Queue({ items, onResolve, onSelect, empty }: { items: Escalation[]; onResolve: (sk: string) => Promise<void>; onSelect: (id: string) => void; empty: string }) {
   const [busy, setBusy] = useState<string | null>(null);
@@ -12,7 +13,7 @@ export function Queue({ items, onResolve, onSelect, empty }: { items: Escalation
   return (
     <ul aria-label="Open escalations">
       {open.map((e) => (
-        <li key={e.SK} className="hairline flex flex-col gap-1.5 px-4 py-3 first:border-t-0">
+        <li key={e.SK} className="hairline relative flex flex-col gap-1.5 px-4 py-3 first:border-t-0"><span className={`absolute left-0 top-3 bottom-3 w-1 rounded-r-sm ${BAR[e.type]}`} aria-hidden />
           <div className="grid grid-cols-[58px_1fr_auto] items-baseline gap-x-3">
             <span className="mono text-[11px] text-ink-muted">{timeHM(e.createdAt).slice(0, 8)}</span>
             <button className="truncate text-left text-[14px] font-semibold hover:underline" onClick={() => onSelect(e.residentId)}>{e.name}</button>

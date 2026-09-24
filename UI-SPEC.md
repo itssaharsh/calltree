@@ -1,13 +1,13 @@
 ---
 name: Calltree
 design: ./DESIGN.md
-direction: "Sodium Night, mutated: radius 6·10·16, topographic contours at 5%, accent as the alert-banner surface, neutrals tinted to amber"
-personality: fluid
+direction: "Klein Blueprint, mutated: radius 2·8·14, cobalt as a surface, chalk blueprint lines only on cobalt; light canvas"
+personality: precise
 dials: { variance: 3, motion: 3, density: 8 }
-stack: { next: 16, react: 19, tailwind: 4, motion: 13, map: "maplibre-gl + Amazon Location Monochrome style", export: static }
+stack: { next: 16, react: 19, tailwind: 4, motion: 13, map: "maplibre-gl 6, pitched 3D with fill-extrusion columns per resident, OpenFreeMap positron", export: static }
 archetype: dashboard-monitoring
 viewports: [390x844, 1024x768, 1440x900]
-signature: "Pins change colour in call order while the ticker prints each deciding quote"
+signature: "Each resident is a 3D column; its height and colour are the outcome, columns rise as calls complete, and the status surface flips to cobalt while the drill runs"
 demo: { seed: ./seed/residents.json, flag: "?demo=1", state_param: "?state=", reset: "Reset demo world button", guest: true }
 deviations:
   - "No login and no auth anywhere: judges click alone from a link."
@@ -86,6 +86,14 @@ S2 --View report--> S4
 - Loading map: skeleton of the map region with "Loading register…".
 - Error state: "Couldn't reach the API. Retry" with the retry button; keeps last data.
 - Mic denied: "Microphone blocked. Type your answer instead."
+
+## 8b. Direction decision
+| Candidate | fits world | projector | differs | buildable | total |
+|---|---|---|---|---|---|
+| A Kiln (dark umber, ochre) | 4 | 4 | 3 | 4 | 15 |
+| B Klein Blueprint (bone, cobalt, flips to blue) | 4 | 5 | 5 | 4 | 18 |
+| C Derived desert noon (bleached bone, vermilion) | 4 | 4 | 4 | 3 | 15 |
+Picked B. Dials: variance 4, motion 3, density 8.
 
 ## 9. Brand
 - Mark: a pin (circle) with three short rays to the upper right, the call fanning out. 48 grid, 2 primitives, ink on canvas, amber ring when live.

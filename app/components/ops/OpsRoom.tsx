@@ -79,7 +79,7 @@ export function OpsRoom() {
     <>
       <div className="flex" role="tablist">
         {(["calls", "queue"] as Tab[]).map((t) => (
-          <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`relative flex-1 py-2.5 text-[13px] font-semibold ${tab === t ? "text-ink" : "text-ink-muted"}`}>
+          <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`relative flex-1 py-2.5 text-[13px] font-semibold ${tab === t ? "text-accent" : "text-ink-muted"}`}>
             <span className="label normal-case tracking-normal" style={{ color: "inherit", fontSize: 13 }}>{t === "calls" ? "Dispatch log" : "Queue"}</span>
             <span className="mono ml-2 text-[11px] text-ink-muted">{t === "calls" ? doneCount || "" : openCount || ""}</span>
             {tab === t && <span className="absolute inset-x-0 -bottom-px h-0.5 bg-accent" />}
@@ -123,17 +123,16 @@ export function OpsRoom() {
           ) : (
             <div className="absolute inset-0 flex items-center justify-center text-center text-ink-muted"><div><p className="text-[16px] text-ink">No residents on the register.</p><p className="text-[14px]">Reset the demo world to seed 100.</p></div></div>
           )}
-          <div className="lamp pointer-events-none absolute inset-0" aria-hidden />
-          <div className="pointer-events-none absolute left-3 top-3 flex w-[min(360px,calc(100%-24px))] flex-col gap-2 [&>*]:pointer-events-auto">
-            <StatusPanel alert={state?.alert || null} drill={state?.drill || null} zone={config?.zone || "AZZ544"} town={config?.town || "Maryvale, Phoenix AZ"} />
+                    <div className="pointer-events-none absolute left-3 top-3 flex w-[min(360px,calc(100%-24px))] flex-col gap-2 [&>*]:pointer-events-auto">
+            <StatusPanel alert={state?.alert || null} drill={state?.drill || null} zone={config?.zone || "AZZ544"} town={config?.town || "Maryvale, Phoenix AZ"} reached={state?.drill?.reached} />
             <ReachPanel counts={state?.drill?.counts || null} metrics={state?.drill?.metrics || null} reached={state?.drill?.reached} running={running} loading={loading} />
           </div>
           <aside className="panel absolute right-3 top-3 bottom-3 z-10 hidden w-[380px] flex-col overflow-hidden md:flex" aria-label="Dispatch log and queue">{rail}</aside>
           <Drawer resident={selectedResident} calls={selectedCalls} onClose={() => setSelected(null)} />
         </div>
-        <aside className="flex min-h-0 flex-col border-t border-line bg-canvas md:hidden" aria-label="Dispatch log and queue">{rail}</aside>
+        <aside className="flex min-h-0 flex-col border-t border-line bg-surface-1 md:hidden" aria-label="Dispatch log and queue">{rail}</aside>
       </div>
-      {toast && <div role="status" className="fixed bottom-4 left-1/2 z-40 -translate-x-1/2 rounded-md bg-ink px-4 py-2 text-[14px] text-canvas">{toast}</div>}
+      {toast && <div role="status" className="fixed bottom-4 left-1/2 z-40 -translate-x-1/2 rounded-md bg-ink px-4 py-2 text-[14px] text-white" style={{ boxShadow: "var(--shadow-2)" }}>{toast}</div>}
     </Shell>
   );
 }

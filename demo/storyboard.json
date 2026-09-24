@@ -86,18 +86,18 @@
     },
     {
      "do": "wait",
-     "for": "text=Heat drill running",
+     "for": "text=heat drill running",
      "timeout": 30000
     },
     {
      "do": "camera",
      "focus": "[aria-label^='Map of registered']",
-     "zoom": 1.25,
+     "zoom": 1.2,
      "at": "Pins"
     },
     {
      "do": "wait",
-     "for": 32000,
+     "for": 30000,
      "timeout": 60000
     },
     {
@@ -123,8 +123,13 @@
    "actions": [
     {
      "do": "wait",
+     "for": "text=8 lines \u00b7 idle",
+     "timeout": 150000
+    },
+    {
+     "do": "wait",
      "for": "button:has-text('light-headed')",
-     "timeout": 120000
+     "timeout": 30000
     },
     {
      "do": "click",
@@ -140,7 +145,7 @@
     {
      "do": "camera",
      "focus": "[aria-label='Decision']",
-     "zoom": 1.6,
+     "zoom": 1.5,
      "at": "never-OK"
     },
     {
@@ -150,7 +155,7 @@
     {
      "do": "camera",
      "focus": "[aria-label='Transcript, attempt 1']",
-     "zoom": 1.4,
+     "zoom": 1.35,
      "at": "underlined"
     },
     {
@@ -166,7 +171,7 @@
    "actions": [
     {
      "do": "click",
-     "sel": "button:has-text('Close details')",
+     "sel": "[aria-label='Close details']",
      "zoom": "out"
     },
     {

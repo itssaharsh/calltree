@@ -11,7 +11,7 @@ import { RULE_LABEL, ESC_LABEL, minutes, usd, pct, dateShort, timeHM } from "@/l
 const LABELS = ["OK", "NEEDS", "URGENT", "UNSURE"] as const;
 
 function Stat({ label, value, sub, big }: { label: string; value: React.ReactNode; sub?: string; big?: boolean }) {
-  return <div className={`hairline flex flex-col gap-1 py-4 ${big ? "md:col-span-2" : ""}`}><span className="label">{label}</span><span className={`numeral ${big ? "text-[64px] md:text-[88px]" : "text-[40px]"}`}>{value}</span>{sub && <span className="text-[13px] text-ink-muted">{sub}</span>}</div>;
+  return <div className={`hairline flex flex-col gap-1 py-4 ${big ? "md:col-span-2" : ""}`}><span className="label">{label}</span><span className={`numeral ${big ? "text-[64px] text-accent md:text-[96px]" : "text-[40px]"}`}>{value}</span>{sub && <span className="text-[13px] text-ink-muted">{sub}</span>}</div>;
 }
 
 export function ReportClient() {
@@ -64,10 +64,10 @@ export function ReportClient() {
         <p className="mt-1 max-w-[70ch] text-[15px] text-ink-muted">Sixty labelled calls, each three spoken answers and the status a trained staff member assigned. The gate that matters: no call labelled URGENT or UNSURE may come out as OK. Understanding is Amazon Lex; the rules are code, not a prompt.</p>
         {evaluation ? (
           <div className="mt-3 grid gap-3 md:grid-cols-[1fr_320px]">
-            <div className="panel overflow-x-auto p-4">
+            <div className="panel overflow-x-auto bg-white p-4">
               <table className="w-full text-[14px]">
                 <thead><tr className="text-left text-[12px] uppercase tracking-[0.08em] text-ink-muted"><th className="pb-2">Labelled ↓ / classified →</th>{LABELS.map((l) => <th key={l} className="pb-2 pr-3 text-right">{l}</th>)}</tr></thead>
-                <tbody>{LABELS.map((row) => <tr key={row} className="border-t border-line"><td className="py-2 font-semibold">{row}</td>{LABELS.map((col) => { const v = evaluation.matrix?.[row]?.[col] || 0; const unsafe = (row === "URGENT" || row === "UNSURE") && col === "OK" && v > 0; return <td key={col} className="py-1 pr-1"><span className={`num flex h-11 items-center justify-end rounded-sm px-3 text-[16px] ${row === col ? "bg-success/15 text-success" : unsafe ? "bg-danger/20 text-danger" : v ? "bg-warning/15 text-warning" : "text-ink-muted"}`}>{v}</span></td>; })}</tr>)}</tbody>
+                <tbody>{LABELS.map((row) => <tr key={row} className="border-t border-line"><td className="py-2 font-semibold">{row}</td>{LABELS.map((col) => { const v = evaluation.matrix?.[row]?.[col] || 0; const unsafe = (row === "URGENT" || row === "UNSURE") && col === "OK" && v > 0; return <td key={col} className="py-1 pr-1"><span className={`num flex h-11 items-center justify-end rounded-sm px-3 text-[16px] ${row === col ? "bg-[#D6EFE0] text-success" : unsafe ? "bg-[#F8D5CF] text-danger" : v ? "bg-[#FBE7B8] text-warning" : "text-ink-muted"}`}>{v}</span></td>; })}</tr>)}</tbody>
               </table>
             </div>
             <div className="flex flex-col gap-3">
@@ -81,7 +81,7 @@ export function ReportClient() {
       <section className="mt-10" aria-labelledby="calls">
         <h2 id="calls" className="text-[22px] font-extrabold">Every call, every decision</h2>
         <p className="mt-1 text-[14px] text-ink-muted">{seedCalls.length} simulated calls to the seeded register{report.calls.length - seedCalls.length ? ` and ${report.calls.length - seedCalls.length} browser calls from visitors` : ""}. Simulated calls use each resident's scripted answers; the understanding and the decision are the real pipeline.</p>
-        <div className="panel mt-3 overflow-x-auto">
+        <div className="panel mt-3 overflow-x-auto bg-white">
           <table className="w-full text-[14px]">
             <thead><tr className="text-left text-[12px] uppercase tracking-[0.08em] text-ink-muted"><th className="px-3 py-2">Resident</th><th className="px-3 py-2">Attempt</th><th className="px-3 py-2">Outcome</th><th className="px-3 py-2">Because</th><th className="px-3 py-2">Quote</th><th className="px-3 py-2">Next</th><th className="px-3 py-2 text-right">Ended</th></tr></thead>
             <tbody>{report.calls.map((c) => <tr key={c.SK} className="border-t border-line align-top"><td className="px-3 py-2 font-semibold">{c.name}</td><td className="num px-3 py-2">{c.attempt}</td><td className="px-3 py-2"><StatusChip status={c.outcome} /></td><td className="px-3 py-2 text-ink-muted">{RULE_LABEL[c.decision?.rule || ""] || c.decision?.rule}</td><td className="mono max-w-[320px] px-3 py-2 text-[12px]">{c.decision?.evidenceQuote ? `“${c.decision.evidenceQuote}”` : ""}</td><td className="px-3 py-2 text-ink-muted">{c.escalation ? ESC_LABEL[c.escalation.type] : "—"}</td><td className="num px-3 py-2 text-right text-ink-muted">{timeHM(c.endedAt)}</td></tr>)}</tbody>

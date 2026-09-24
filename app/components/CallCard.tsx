@@ -103,15 +103,14 @@ export function CallCard({ presetName }: { presetName?: string }) {
   const hangup = () => { stopRef.current?.(); audioRef.current?.pause(); window.speechSynthesis?.cancel(); setPhase("idle"); session.current = null; };
   const submitTyped = (e: React.FormEvent) => { e.preventDefault(); if (!typed.trim()) return; const t = typed; setTyped(""); void send({ text: t }); };
 
-  const ringColor = phase === "listening" ? "#4CC38A" : phase === "speaking" ? "#FFA41B" : phase === "thinking" ? "#F3E6CF" : "#3E4766";
+  const ringColor = phase === "listening" ? "#1E7A4C" : phase === "speaking" ? "#1F3BD6" : phase === "thinking" ? "#8C570A" : "#CCC6B8";
   const stage = phase === "idle" ? "City heat check-in" : phase === "ringing" ? "Ringing…" : phase === "speaking" ? `Speaking · question ${Math.max(1, q)} of 3` : phase === "listening" ? (useText ? "Your turn · type your answer" : "Listening · speak now") : phase === "thinking" ? "Understanding…" : phase === "done" ? "Call ended" : phase === "mic-denied" ? "Microphone blocked · type instead" : "Call dropped";
   const timer = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
   return (
     <div className="mx-auto flex w-full max-w-[560px] flex-col gap-4 px-4 py-8">
-      <div className="panel-strong relative overflow-hidden">
-        <div className="lamp pointer-events-none absolute inset-0" aria-hidden />
+      <div className="panel relative overflow-hidden bg-white">
         <div className="relative flex items-center gap-4 px-5 pt-5">
-          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-200" style={{ borderColor: ringColor, boxShadow: phase === "listening" ? `0 0 0 ${3 + level * 16}px rgba(76,195,138,${0.14 + level * 0.25})` : phase === "speaking" ? "0 0 0 6px rgba(255,164,27,0.16)" : undefined }}>
+          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 transition-colors duration-200" style={{ borderColor: ringColor, boxShadow: phase === "listening" ? `0 0 0 ${3 + level * 16}px rgba(30,122,76,${0.12 + level * 0.25})` : phase === "speaking" ? "0 0 0 6px rgba(31,59,214,0.14)" : undefined }}>
             <Mark size={32} live={phase !== "idle" && phase !== "done"} />
           </div>
           <div className="min-w-0 flex-1">
@@ -141,7 +140,7 @@ export function CallCard({ presetName }: { presetName?: string }) {
             <form className="mt-2 flex flex-col gap-3" onSubmit={(e) => { e.preventDefault(); void start(); }}>
               <label className="text-[14px] text-ink-muted" htmlFor="name">Your first name, so Calltree can greet you</label>
               <input id="name" className="input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Rosa" maxLength={40} autoComplete="given-name" />
-              <button type="submit" className="btn btn-primary btn-lg">Answer the call</button>
+              <button type="submit" className="btn btn-answer btn-lg">Answer the call</button>
               <p className="text-[13px] text-ink-muted">Three questions, about a minute. Say “I feel dizzy” to see the escalation path. Chrome or Edge with a microphone works best; you can type instead.</p>
             </form>
           )}
@@ -158,7 +157,7 @@ export function CallCard({ presetName }: { presetName?: string }) {
             </div>
           )}
           {phase !== "idle" && phase !== "done" && phase !== "error" && (
-            <div className="mt-3 flex justify-center"><button className="btn btn-ghost text-danger" onClick={hangup}>Hang up</button></div>
+            <div className="mt-3 flex justify-center"><button className="btn btn-hangup h-9 px-4 text-[14px]" onClick={hangup}>Hang up</button></div>
           )}
           {phase === "error" && (
             <div className="mt-3 flex flex-col gap-2" role="alert"><p className="text-[14px] text-danger">{error}</p><button className="btn btn-secondary" onClick={() => void start()}>Try again</button></div>
@@ -167,7 +166,7 @@ export function CallCard({ presetName }: { presetName?: string }) {
       </div>
       <AnimatePresence>
         {phase === "done" && decision && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="panel p-5" role="status">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="panel bg-white p-5" role="status">
             <div className="flex items-end justify-between gap-3"><span className={`stamp stamp-${decision.status} text-[40px]`}>{decision.status === "NO_ANSWER" ? "No answer" : decision.status.charAt(0) + decision.status.slice(1).toLowerCase()}</span><span className="text-right text-[13px] text-ink-muted">{RULE_LABEL[decision.rule] || decision.rule}</span></div>
             {decision.evidenceQuote && <p className="mt-3 text-[18px] leading-snug">“{decision.evidencePhrase && decision.evidenceQuote.toLowerCase().includes(decision.evidencePhrase.toLowerCase()) ? <>{decision.evidenceQuote.slice(0, decision.evidenceQuote.toLowerCase().indexOf(decision.evidencePhrase.toLowerCase()))}<mark className="evidence bg-transparent">{decision.evidenceQuote.slice(decision.evidenceQuote.toLowerCase().indexOf(decision.evidencePhrase.toLowerCase()), decision.evidenceQuote.toLowerCase().indexOf(decision.evidencePhrase.toLowerCase()) + decision.evidencePhrase.length)}</mark>{decision.evidenceQuote.slice(decision.evidenceQuote.toLowerCase().indexOf(decision.evidencePhrase.toLowerCase()) + decision.evidencePhrase.length)}</> : decision.evidenceQuote}”</p>}
             {escalation ? <p className="mt-3 text-[14px]"><span className="label text-accent">{ESC_LABEL[escalation.type] || escalation.type}</span> <span className="text-ink-muted">·</span> {escalation.message}</p> : decision.status === "OK" ? <p className="mt-3 text-[14px] text-ink-muted">OK only because all three answers were clear affirmatives. Nothing for a person to do.</p> : <p className="mt-3 text-[14px] text-ink-muted">A person will follow up. Nothing here is guessed.</p>}

@@ -1,6 +1,7 @@
 import type { Status } from "./types";
 export const STATUS_LABEL: Record<Status | "PENDING", string> = { OK: "OK", NEEDS: "Needs", URGENT: "Urgent", UNSURE: "Unsure", NO_ANSWER: "No answer", IN_PROGRESS: "Calling", PENDING: "Pending" };
-export const STATUS_COLOR: Record<Status | "PENDING", string> = { OK: "#4CC38A", NEEDS: "#FFD24A", URGENT: "#FF7A7A", UNSURE: "#F3E6CF", NO_ANSWER: "#6B7280", IN_PROGRESS: "#FFA41B", PENDING: "#3E4766" };
+export const STATUS_COLOR: Record<Status | "PENDING", string> = { OK: "#2BB673", NEEDS: "#F2B233", URGENT: "#E3402C", UNSURE: "#8D95A8", NO_ANSWER: "#3A3F4B", IN_PROGRESS: "#1F3BD6", PENDING: "#C9C3B5" };
+export const STATUS_HEIGHT: Record<Status | "PENDING", number> = { OK: 26, NEEDS: 48, URGENT: 78, UNSURE: 40, NO_ANSWER: 34, IN_PROGRESS: 22, PENDING: 5 };
 export const RULE_LABEL: Record<string, string> = {
   "never-ok-phrase": "said a never-OK phrase", "intent-unwell": "said they feel unwell", "not-fine-phrase": "said they are not fine",
   "incomplete-call": "call ended early", "low-confidence": "answer unclear, not guessed", "negative-sentiment": "sounded distressed",

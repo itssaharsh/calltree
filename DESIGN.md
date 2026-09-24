@@ -1,77 +1,84 @@
 ---
 name: Calltree
-description: Heat-alert check-in calls for a town's vulnerable-persons register. Night-shift operations room, sodium streetlamp amber on navy, a map that changes colour as calls complete.
+description: A municipal heat register as a civic instrument. Bone paper, cobalt for the one action, the whole status surface flips to cobalt while the drill runs, and the town is a 3D map where each resident is a column whose height is how urgently a person is needed.
 colors:
-  canvas: "#0E1220"
-  surface-1: "#151A2B"
-  surface-2: "#1D2336"
-  line: "#2B3249"
-  ink: "#F3E6CF"
-  ink-muted: "#A69E8F"
-  accent: "#FFA41B"
-  accent-ink: "#1A1000"
-  success: "#4CC38A"
-  warning: "#FFD24A"
-  danger: "#FF7A7A"
-  pending: "#6B7280"
+  canvas: "#EFECE5"
+  surface-1: "#F8F7F3"
+  surface-2: "#E2DED4"
+  line: "#CCC6B8"
+  ink: "#0B1430"
+  ink-muted: "#4A5068"
+  accent: "#1F3BD6"
+  accent-ink: "#FFFFFF"
+  blue: "#1B2FA8"
+  chalk: "#F4F3EE"
+  success: "#1E7A4C"
+  warning: "#8C570A"
+  danger: "#C2311F"
+  map-ok: "#2BB673"
+  map-needs: "#F2B233"
+  map-urgent: "#E3402C"
+  map-unsure: "#8D95A8"
+  map-noanswer: "#3A3F4B"
+  map-pending: "#C9C3B5"
 typography:
   fontFamily:
-    display: "Funnel Display"
-    body: "Funnel Sans"
-    mono: "Martian Mono"
+    display: "Schibsted Grotesk"
+    body: "Instrument Sans"
+    mono: "IBM Plex Mono"
   fontSize:
-    xs: "12px"
-    sm: "14px"
-    base: "16px"
-    lg: "20px"
-    xl: "28px"
-    display: "clamp(2.5rem, 1.6rem + 4.5vw, 5.5rem)"
+    label: "11px"
+    body: "16px"
+    h3: "19px"
+    h2: "44px"
+    h1: "68px"
+    numeral: "168px"
 rounded:
-  sm: "6px"
-  md: "10px"
-  lg: "16px"
+  sm: "2px"
+  md: "8px"
+  lg: "14px"
 spacing:
   base: "4px"
 ---
 
 ## Overview
-Calltree is an operations room at night during a heat emergency. The canvas is navy, the light comes from one amber streetlamp pool behind the hero object (the map), and the only saturated colours are the four call outcomes. Direction: Sodium Night, mutated: radius family 6·10·16, topographic contour texture at 5%, accent used as a surface on the alert banner, neutrals tinted toward amber.
+Direction: Klein Blueprint, mutated (radius 2·8·14, cobalt as a large surface, chalk blueprint lines only on cobalt). The world is a municipal register: paper, a stamp, a wall clock, a dispatch log, and the town itself. Light so it reads on a projector and looks nothing like a dark AI dashboard.
 
 ## Colors
-- canvas `#0E1220`: page background, always.
-- surface-1 `#151A2B`, surface-2 `#1D2336`: cards and drawers; elevation by ladder, never by shadow.
-- ink `#F3E6CF` body text; ink-muted `#A69E8F` secondary text (contrast 5.9:1 on canvas).
-- accent `#FFA41B` amber: the primary CTA, the active heat-alert banner surface, focus ring, the live series on charts. Never two accents in one view. Accent budget under 5% of pixels, except the alert banner during a drill.
-- Outcome colours, used only for outcomes and never for decoration: success `#4CC38A` OK, warning `#FFD24A` NEEDS, danger `#FF7A7A` URGENT, pending `#6B7280` not yet reached; a no-answer pin is pending with a danger outline.
+- canvas `#EFECE5` bone paper, always the page. surface-1 `#F8F7F3` panels; white `#FFFFFF` only for the decision card, inputs and the call screen.
+- ink `#0B1430` and ink-muted `#4A5068` (7.9:1 on canvas).
+- accent cobalt `#1F3BD6`: the one primary action per view, links and citations, focus, the active tab, the reach numeral while a drill runs. Never two accents in one view.
+- blue `#1B2FA8` with chalk `#F4F3EE`: the flip. Only the running status panel, the running header, the landing's unhappy-path section and the hero badge. Chalk blueprint lines live only here.
+- Outcomes on paper: success `#1E7A4C`, warning `#8C570A`, danger `#C2311F`, unsure ink-muted, no answer graphite `#2B2F3A`.
+- Outcomes on the map (saturated so they read in 3D): OK `#2BB673`, NEEDS `#F2B233`, URGENT `#E3402C`, UNSURE `#8D95A8`, NO_ANSWER `#3A3F4B`, PENDING `#C9C3B5`, dialing cobalt.
+- Buttons by meaning: Declare heat drill cobalt; Answer the call green; Hang up red; Get called yourself bone secondary; Reset ghost; on cobalt, white chalk pills.
+- Escalation bars: neighbour red, staff cobalt, supply amber, visit graphite.
 
 ## Typography
-- Display: Funnel Display 800, tracking −0.03em, line-height 1.05. Headlines only.
-- Body: Funnel Sans 400/600, 16px, line-height 1.55, measure 60ch max.
-- Mono: Martian Mono for every number that changes (times, counts, costs) with tabular numerals, and for transcript quotes.
-- Sentence case everywhere. Buttons name their result: "Declare heat drill", "Answer the call", "Mark visited".
+- Display Schibsted Grotesk 800, −0.03em; numerals −0.045em, line-height 0.92.
+- Body Instrument Sans 400/600, 16px, 1.55, measure ≤64ch.
+- Mono IBM Plex Mono for timestamps, ids, labels (11px uppercase +0.12em) and every changing number, tabular.
 
 ## Layout
-- 4px base. Tight gaps inside groups (4 to 8), generous between groups (32 to 64).
-- Ops screen at 1440: header 56, KPI strip 96, map fills the rest with a 380px right rail (ticker, queue). Resident drawer 480 from the right.
-- Phone width: header, KPI strip as a horizontal scroll, map 52vh, rail stacked below.
+- Ops room: the 3D map is the page. Status and reach panels top-left (360px), dispatch-log rail right (380px), drawer 480px over the rail. Phone: map 56vh then the rail.
+- Landing: 5/7 hero with the live orbiting map, a 168px numeral band, timeline beside a call log, the cobalt section, next steps.
 
 ## Elevation & Depth
-- Surface ladder only. Drawers get a 1px line-strong border. No glass, no glow except the single amber radial behind the map.
+- shadow-1 on panels, shadow-2 on the drawer and the hero map. The map itself carries the depth: pitch 56°, columns, bone buildings.
 
 ## Shapes
-- Radius scale: chips 6, cards and inputs 10, drawers and the call screen 16. Pins are circles with a 2px canvas ring.
+- 2px chips and labels, 8px buttons, inputs and panels, 14px drawer and hero. Pills only for chips and chalk buttons.
 
 ## Components
-- button-primary: bg accent, fg accent-ink, 600, h40 (h44 touch), radius md. Hover accent-hover, press scale .97.
-- button-secondary: surface-1, 1px line, ink.
-- status-chip: outcome colour at 14% background, outcome colour text, radius sm, mono 12px uppercase +0.08em.
-- alert-banner: accent surface with accent-ink text while a drill runs; surface-1 with ink when idle.
-- call-row (ticker): 44px, name, chip, mono quote clipped to one line, mono time.
-- transcript-turn: label (Calltree or resident), body text; the deciding quote gets an accent underline.
+- button-primary: accent bg, white 600 label, h40. Hover accent-hover, press scale .97.
+- button-answer: success bg, white. button-hangup: danger bg, white.
+- chip: outcome tint bg + outcome text, mono 11px uppercase, pill.
+- stamp: display 800 uppercase in the outcome colour, 34 to 40px.
+- panel-blue: blue bg, chalk text, blueprint lines, shadow-2.
+- column (map): octagon 10m radius, height 5 (pending) 26 (OK) 40 (unsure) 34 (no answer) 48 (needs) 78 (urgent); +14 when selected; dialing pulses ±10.
 
 ## Do's and Don'ts
-- Do open on a finished drill. Never an empty map.
-- Do put every changing number in mono, tabular.
-- Don't use purple, gradients on text, glass cards, emoji, or sparkles.
-- Don't animate on hover except a 150ms colour change. Pins animate only when their outcome changes.
-- Don't show a spinner under 300ms. Calls in progress show the step name: "Ringing", "Question 2 of 3".
+- Do open on a finished drill with columns already standing.
+- Do keep every changing number mono and tabular.
+- Don't put chalk lines on paper surfaces. Don't use cobalt for outcomes. No purple, no gradients on text, no glass, no emoji.
+- Don't animate on hover except colour. Columns animate only when their outcome changes.

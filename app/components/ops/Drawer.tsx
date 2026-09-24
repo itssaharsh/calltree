@@ -45,7 +45,7 @@ export function Drawer({ resident, calls, onClose }: { resident: Resident | null
   return (
     <AnimatePresence>
       {resident && (
-        <motion.aside ref={panel} key={resident.id} role="dialog" aria-modal="false" aria-label={`${resident.name} details`} initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 40, opacity: 0 }} transition={{ type: "spring", visualDuration: 0.35, bounce: 0 }} className="panel-strong absolute inset-y-0 right-0 z-20 flex w-full max-w-[480px] flex-col rounded-none border-y-0 border-r-0 md:inset-y-3 md:right-3 md:rounded-[16px] md:border">
+        <motion.aside ref={panel} key={resident.id} role="dialog" aria-modal="false" aria-label={`${resident.name} details`} initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: 40, opacity: 0 }} transition={{ type: "spring", visualDuration: 0.35, bounce: 0 }} className="panel absolute inset-y-0 right-0 z-20 flex w-full max-w-[480px] flex-col rounded-none border-y-0 border-r-0 md:inset-y-3 md:right-3 md:rounded-[14px] md:border" style={{ boxShadow: "var(--shadow-2)" }}>
           <div className="flex items-start gap-3 px-5 pt-5">
             <div className="min-w-0 flex-1">
               <p className="label">{resident.kind === "visitor" ? "visitor" : `register · ${resident.id}`}</p>
@@ -55,7 +55,7 @@ export function Drawer({ resident, calls, onClose }: { resident: Resident | null
             <button className="btn btn-ghost h-9 w-9 px-0" onClick={onClose} aria-label="Close details">✕</button>
           </div>
           <div className="scrollbar-thin flex-1 overflow-y-auto px-5 pb-4">
-            <section className="mt-4 rounded-md border border-line bg-surface-1 p-4" aria-label="Decision">
+            <section className="mt-4 rounded-md border border-line bg-white p-4" aria-label="Decision">
               <div className="flex items-end justify-between gap-3">
                 <span className={`stamp stamp-${status} text-[34px]`}>{STATUS_LABEL[status]}</span>
                 <span className="mono text-[12px] text-ink-muted">{resident.last ? timeHM(resident.last.at) : "not called yet"}</span>
