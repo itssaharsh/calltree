@@ -32,4 +32,6 @@ How Calltree was built, in order, with what the coding agent did and what it got
 
 | 24 Sep 15:30 | Four lockstep-capture attempts of the demo video stalled on the WebGL map (one input dispatch hung for 50 min). Switched to a real-time Playwright recording with scene marks and the browser call's own Polly audio captured from the API responses, then a custom ffmpeg assembler: cards from the kit's overlays, live cuts in the window chrome, Kokoro narration at the marks, burned-in captions, ducked music, loudness at −14 LUFS. Repo made public. | agent |
 
+| 24 Sep 16:55 | The builder verified the SES address. The escalation channel had been live since then: today's drills used up the sandbox's 200-message daily quota on real escalation emails. Emails now go out only for urgent (neighbour) escalations with a daily cap of 40; the ops-room queue remains the source of truth. Repo cleaned for judges: internal brief, UI spec, video tooling and debug scripts removed; design and demo script moved under docs; MIT licence. | agent |
+
 Each MCP tool call is visible in CloudTrail for account 277025716889 with user agent `aws-mcp`. Screenshots of the agent's session are in `docs/proof/`.
