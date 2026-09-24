@@ -34,4 +34,6 @@ How Calltree was built, in order, with what the coding agent did and what it got
 
 | 24 Sep 16:55 | The builder verified the SES address. The escalation channel had been live since then: today's drills used up the sandbox's 200-message daily quota on real escalation emails. Emails now go out only for urgent (neighbour) escalations with a daily cap of 40; the ops-room queue remains the source of truth. Repo cleaned for judges: internal brief, UI spec, video tooling and debug scripts removed; design and demo script moved under docs; MIT licence. | agent |
 
+| 24 Sep 17:15 | Demo video finished: 163 s, 1080p30, −14.5 LUFS, captions burned in. Hook and end cards over the drill footage, the ops room with columns rising, the URGENT drawer with the phrase underlined, the queue, the browser call with Calltree's Polly voice, the decision, the architecture card, the report. | agent |
+
 Each MCP tool call is visible in CloudTrail for account 277025716889 with user agent `aws-mcp`. Screenshots of the agent's session are in `docs/proof/`.
